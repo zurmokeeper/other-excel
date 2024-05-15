@@ -1,0 +1,9 @@
+{
+	"dependencies": {
+		"cfb": "^1.2.2",
+		"typescript": "^5.4.2"
+	},
+	"devDependencies": {
+		"@types/node": "^20.11.28"
+	}
+}
