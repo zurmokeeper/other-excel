@@ -2,11 +2,19 @@
 import * as CFB from 'cfb';
 import * as fs from 'fs';
 import { CountryCodeEnum } from '../../util/enum';
+import { parseBoundSheet8 } from '../xls/record/boundSheet';
+import { parseBOF } from '../xls/record/bof';
+import { parseSST } from '../xls/record/sst';
+import { parseCountry } from '../xls/record/country';
+import { parseDimensions } from '../xls/record/dimensions';
+import { parseRow } from '../xls/record/row';
+// import { parseIndex } from '../xls/record/recordIndex';
+import { parseIndex } from './record/tttt';
 
 /**
  * @desc cfb blob.l  未加定义，手动加上
  */
-type CustomCFB$Blob = CFB.CFB$Blob & {l: number, read_shift(num: number, encoding?: string): any}
+export type CustomCFB$Blob = CFB.CFB$Blob & {l: number, read_shift(num: number, encoding?: string): any}
 
 interface XLSRecord {
 	func?: (blob: CustomCFB$Blob, length: number, options?: any) => any;
@@ -22,6 +30,10 @@ const XLSRECORDENUM: XLSRecordEnum = {
 	0x0086: { },
 	0x00fc: {func: parseSST},
 	0x008c: {func: parseCountry },
+	0x0200: { /* n:"Dimensions", */ func: parseDimensions },
+	0x0208: {func: parseRow },
+	0x013d: { /* n:"RRTabId", */ func: parseUInt16a },
+	0x020b: { /* n:"Index", */ func: parseIndex },
 }
 
 
@@ -38,7 +50,7 @@ let currentCodepage = 1200;
  * @param length 
  * @returns 
  */
-function parseShortXLUnicodeString(blob: CustomCFB$Blob, length: number, options: any) {
+export function parseShortXLUnicodeString(blob: CustomCFB$Blob, length: number, options: any) {
 	const cch = blob.read_shift(options && options.biff >= 12 ? 2 : 1);   // cch -> count of characters
 	let encoding = 'sbcs-cont';
 	const codepage = currentCodepage;
@@ -57,69 +69,14 @@ function parseShortXLUnicodeString(blob: CustomCFB$Blob, length: number, options
 	return str;
 }
 
-/**
- * @desc [MS-XLS] 2.4.21 
- * @param blob 
- * @param length 
- * @returns 
- */
-// function parseBOF(blob: CFB.CFB$Blob, length){
-function parseBOF(blob: CustomCFB$Blob, length: number){
-	const o = {BIFFVer: 0, dt: 0};
-	o.BIFFVer = blob.read_shift(2); 
-    length -= 2;
-	if(length >= 2) { 
-		// 0x0005  Specifies the workbook substream.
-		// 0x0010  Specifies the dialog sheet substream or the worksheet substream.
-		// 0x0020  Specifies the chart sheet substream.
-		// 0x0040  Specifies the macro sheet substream.
-		o.dt = blob.read_shift(2); 
-		blob.l -= 2; 
-	}
-	switch(o.BIFFVer) {
-		case 0x0600: /* BIFF8 */
-		case 0x0500: /* BIFF5 */
-		case 0x0400: /* BIFF4 */
-		case 0x0300: /* BIFF3 */
-		case 0x0200: /* BIFF2 */
-		case 0x0002: 
-		case 0x0007: /* BIFF2 */
-			break;
-		default: if(length > 6) throw new Error("Unexpected BIFF Ver " + o.BIFFVer);
-	}
 
-	blob.read_shift(length);
-	return o;
-}
-
-/**
- * @desc [MS-XLS] 2.4.28
- * @param blob 
- * @param length 
- * @param opts 
- * @returns 
- */
-function parseBoundSheet8(blob: CustomCFB$Blob, length: number, options: any) {
-	const lbPlyPos = blob.read_shift(4);
-	const hsState = blob.read_shift(1) & 0x03;   // 2位  hsState: 0 可见   hsState: 1 隐藏
-	let dt = blob.read_shift(1);
-	switch(dt) {
-		case 0: dt = 'Worksheet'; break;
-		case 1: dt = 'Macrosheet'; break;
-		case 2: dt = 'Chartsheet'; break;
-		case 6: dt = 'VBAModule'; break;
-	}
-	let stName = parseShortXLUnicodeString(blob, 0, options);
-	if(stName.length === 0) stName = "Sheet1";
-	return { pos: lbPlyPos, hsState: hsState, dt:dt, stName: stName };
-}
 
 interface XLUnicodeRichExtendedStringResult {
 
 }
 
 /* 2.5.293 XLUnicodeRichExtendedString */
-function parseXLUnicodeRichExtendedString(blob: CustomCFB$Blob) {
+export function parseXLUnicodeRichExtendedString(blob: CustomCFB$Blob) {
 	let codepage = currentCodepage;
 	currentCodepage = 1200;
 	const cch = blob.read_shift(2);
@@ -147,50 +104,26 @@ function parseXLUnicodeRichExtendedString(blob: CustomCFB$Blob) {
 	return z;
 }
 
-/**
- * @desc [MS-XLS] 2.4.265   Strings: [ { t: '阿萨德', raw: '<t>阿萨德</t>', r: '阿萨德' }, Count: 1, Unique: 1 ],
- * 
- * sst -> shared string table
- * @param blob 
- * @param length 
- * @returns 
- */
-function parseSST(blob: CustomCFB$Blob, length: number) {
-	const end = blob.l + length;
-	// var cnt = blob.read_shift(4);
-	// var ucnt = blob.read_shift(4);
+function parseUInt16(blob: CustomCFB$Blob) { 
+	return blob.read_shift(2, 'u'); 
+}
 
-	const cstTotal = blob.read_shift(4);
-	const cstUnique = blob.read_shift(4);
 
-	const strs : any = [];
-	for(let i = 0; i != cstUnique && blob.l < end; ++i) {
-		strs.push(parseXLUnicodeRichExtendedString(blob));
+function parseSlurp(blob: CustomCFB$Blob, length: number, cb: any) {
+	const arr = [];
+	const target = blob.l + length;
+	while(blob.l < target) {
+		arr.push(cb(blob, target - blob.l));
 	}
-	const o = {
-		strs: [],
-		count: 0, 
-		uniqueCount: 0
-	};
-	o.strs = strs; 
-	o.count = cstTotal; 
-	o.uniqueCount = cstUnique;
-	return o;
+	if(target !== blob.l) throw new Error("Slurp error");
+	return arr;
 }
 
-/** 
- * @desc  [MS-XLS] 2.4.63 
- * @param blob 
- * @returns 
- */
-function parseCountry(blob: CustomCFB$Blob) {
-	let o: string[] = [], countryCode: number = 1;
-	countryCode = blob.read_shift(2); // iCountryDef
-	o[0] = CountryCodeEnum[countryCode];
-	countryCode = blob.read_shift(2);  // iCountryWinIni
-	o[1] = CountryCodeEnum[countryCode];
-	return o;
+
+function parseUInt16a(blob: CustomCFB$Blob, length: number) { 
+	return parseSlurp(blob, length, parseUInt16);
 }
+
 
 function slurp(blob: any, length: number, record: XLSRecord){
 	const data = blob.slice(blob.l, blob.l + length);
@@ -218,6 +151,10 @@ interface Workbook {
 	calcRefMode?: boolean;
 	fullCalc?: boolean;
 	country: string[];
+	dimensions: Record<string, any>[]
+	// dimensions?: any[]
+	rows: Record<string, any>[],
+	RRTabId: [];
 }
 
 /**
@@ -233,7 +170,10 @@ export async function parseWorkbook(blob: any, options?: any){
 		date1904: false,
 		// country: '',
 		wordsheets: [],
-		country: []
+		country: [],
+		dimensions: [],
+		rows: [],
+		RRTabId: []
 	}
 	let recordTypeList = [];
     while (blob.l < blob.length - 1) {
@@ -251,7 +191,7 @@ export async function parseWorkbook(blob: any, options?: any){
 
             switch (recordType) {
                 case 0x0085:   // BoundSheet8
-					console.log('value-->123', value)
+					// console.log('value-->123', value)
 					workbook.sheetNames.push(value)
                     break;
 				case 0x0022:
@@ -259,7 +199,8 @@ export async function parseWorkbook(blob: any, options?: any){
 					break;
 				case 0x0000: 
 				case 0x0200:   /* Dimensions */
-					range = value;
+					console.log('value-->range', value)
+					workbook.dimensions.push(value)
 					break;
 				case 0x00fc:   /* SST */
 					console.log('value-->sst', value)
@@ -267,15 +208,23 @@ export async function parseWorkbook(blob: any, options?: any){
 					workbook.wordsheets.push(value)
 					break;
 				case 0x0208: /* Row */
+					workbook.rows.push(value)
 					break;
 				case 0x008c: /* Country */
 					workbook.country = value;
 					break;
+				case 0x020B: /* Index */
+					break;
+				case 0x013d: /* RRTabId */
+					workbook.RRTabId = value;
+					break;
+					
                 default:
                     break;
             }
         }
 		// console.log('value-->', value)
-		console.log('workbook-->', JSON.stringify(workbook))
+
     }
+	console.log('workbook-->', JSON.stringify(workbook))
 }
