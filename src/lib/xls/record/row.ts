@@ -1,5 +1,5 @@
 
-import { CustomCFB$Blob } from '../parse';
+import { CustomCFB$Blob } from '../../../util/type';
 
 /*
 A ROW record describes a single row on an Excel sheet. ROW records and their

@@ -192,11 +192,6 @@ interface Workbook {
 	Font: Record<string, any>[],
 }
 
-class Worksheet {
-	constructor() {
-	}
-}
-
 /**
  * @desc record [type, size, data]
  * @param blob 
@@ -205,7 +200,6 @@ class Worksheet {
 // export function parseWorkbook(blob: CustomCFB$Blob, options?: any){
 export async function parseWorkbook(blob: any, options?: any){
 
-	const worksheet = new Worksheet();
 
 	const workbook: Workbook = {
 		sheetNames: [],

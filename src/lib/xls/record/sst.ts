@@ -1,5 +1,6 @@
 
-import { CustomCFB$Blob, parseXLUnicodeRichExtendedString } from '../parse';
+import { parseXLUnicodeRichExtendedString } from '../parse';
+import { CustomCFB$Blob } from '../../../util/type';
 
 
 /**

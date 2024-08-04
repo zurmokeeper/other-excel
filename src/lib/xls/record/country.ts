@@ -1,7 +1,7 @@
 
 
 import { CountryCodeEnum } from '../../../util/enum';
-import { CustomCFB$Blob } from '../parse';
+import { CustomCFB$Blob } from '../../../util/type';
 
 
 /** 

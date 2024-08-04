@@ -1,5 +1,5 @@
-
-import { CustomCFB$Blob, parseShortXLUnicodeString } from '../parse';
+import { CustomCFB$Blob } from '../../../util/type';
+import { parseShortXLUnicodeString } from '../parse';
 
 /**
  * @desc [MS-XLS] 2.4.28

@@ -6,6 +6,8 @@ import * as fs from 'fs';
 // import * as CFB from 'cfb';
 import XLSX from 'xlsx';
 import { parseWorkbook } from './lib/xls/parse';
+import WorkBook from './workbook';
+import { parseWorkbook as parseWorkbookV2, Parse } from './lib/xls/parsev2';
 
 type Options = {
   type?: 'base64' | 'buffer' | 'stream';
@@ -18,16 +20,15 @@ type Options = {
 // const worksheet = workbook.getWorksheet(1);
 
 class Excel {
-  workbook: Record<string, any>;
+  workbook: WorkBook;
 
-  // constructor(workbook?: Record<string, any>) {
-  //   this.workbook = workbook || {}
-  // }
   constructor() {
-    this.workbook = {}
+    this.workbook = new WorkBook();
   }
 
-  async read(data: string | Buffer | fs.ReadStream, options?: Options): Promise<any> {
+  async read(data: string | Buffer | fs.ReadStream, options?: Options): Promise<WorkBook>{
+  // async read(data: string | Buffer | fs.ReadStream, options?: Options){
+  // async read(data: string | Buffer | fs.ReadStream, options?: Options): Promise<any> {
 
     let buffer;
     if (typeof data === 'string') {
@@ -64,7 +65,15 @@ class Excel {
       throw new Error('Unsupported data type');
     }
   
-    parseWorkbook(Workbook.content)
+    // parseWorkbook(Workbook.content)
+    // parseWorkbook(Workbook.content)
+
+    // parseWorkbookV2(Workbook.content, options, this.workbook)
+
+    // this.workbook.parse(Workbook.content, options)
+
+    const parse = new Parse(this.workbook)
+    parse.parse(Workbook.content, options)
   
     return this.workbook;
   }
@@ -105,6 +114,36 @@ class Excel {
   }
 }
 
+export default Excel;
+
+// class ExcelTest {
+//   read(){
+//     console.log('read')
+//     return new WorkBook()
+//   }
+// }
+
+// export default ExcelTest;
+
+// class WorkSheet {
+//   getCell(){
+//     console.log('xxxx')
+// }
+// }
+
+// class WorkBook {
+//   getWorksheet(){
+//       console.log('xxxx')
+//       return new WorkSheet()
+//   }
+// }
+
+// const otherExcel = {
+//   WorkBook: WorkBook
+// }
+
+// export default otherExcel;
+
 // read('../tests/test1.xls')
 // read('./tests/test1.xls')
 
@@ -117,7 +156,7 @@ async function name() {
   // const worksheet = workbook.getWorksheet(1);
 }
 
-name()
+// name()
 
 
 

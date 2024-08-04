@@ -1,5 +1,5 @@
 
-import { CustomCFB$Blob } from '../parse';
+import { CustomCFB$Blob } from '../../../util/type';
 
 /**
  * @desc [MS-XLS] 2.4.21 
