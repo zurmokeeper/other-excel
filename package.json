@@ -1,7 +1,8 @@
 {
 	"dependencies": {
 		"cfb": "^1.2.2",
-		"typescript": "^5.4.2"
+		"typescript": "^5.4.2",
+		"xlsx": "^0.18.5"
 	},
 	"devDependencies": {
 		"@types/node": "^20.11.28"

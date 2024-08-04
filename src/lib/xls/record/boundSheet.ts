@@ -3,6 +3,9 @@ import { CustomCFB$Blob, parseShortXLUnicodeString } from '../parse';
 
 /**
  * @desc [MS-XLS] 2.4.28
+ * BoundSheet8 [(0x8500)133 20]
+ * lbPlyPos(4 byte) (A - hsState (2 bits) unused (6 bits))(1 byte)   dt (8 bits)(1 byte)  剩下14 byte 都是 stName
+ * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/b9ec509a-235d-424e-871d-f8e721106501
  * @param blob 
  * @param length 
  * @param opts 
@@ -19,6 +22,7 @@ export function parseBoundSheet8(blob: CustomCFB$Blob, length: number, options: 
 		case 6: dt = 'VBAModule'; break;
 	}
 	let stName = parseShortXLUnicodeString(blob, 0, options);
-	if(stName.length === 0) stName = "Sheet1";
+	if(stName?.length === 0) stName = "Sheet1";
 	return { pos: lbPlyPos, hsState: hsState, dt:dt, stName: stName };
+	// return { pos: lbPlyPos, hiddenState: hsState, dt:dt, sheetName: stName };
 }

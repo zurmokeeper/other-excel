@@ -1,6 +1,10 @@
 
-import * as CFB from 'cfb';
+// import * as CFB from 'cfb';
 import * as fs from 'fs';
+import XLSX from 'xlsx';
+
+const CFB = XLSX.CFB
+
 import { CountryCodeEnum } from '../../util/enum';
 import { parseBoundSheet8 } from '../xls/record/boundSheet';
 import { parseBOF } from '../xls/record/bof';
@@ -10,11 +14,22 @@ import { parseDimensions } from '../xls/record/dimensions';
 import { parseRow } from '../xls/record/row';
 // import { parseIndex } from '../xls/record/recordIndex';
 import { parseIndex } from './record/tttt';
+import { parseLabelSST } from '../xls/record/labelSst';
+import { parseXF } from '../xls/record/xf';
+import { parseFont } from '../xls/record/font';
+
+// import { read_shift } from '../../util/customCfbJS';
+const customCfbJS: any = require('../../util/customCfbJS.js');
+
+// import * as customCfbJS from '../../../customCfbJS';
+// const customModule: any = customCfbJS;
 
 /**
  * @desc cfb blob.l  未加定义，手动加上
  */
-export type CustomCFB$Blob = CFB.CFB$Blob & {l: number, read_shift(num: number, encoding?: string): any}
+// export type CustomCFB$Blob = CFB.CFB$Blob & {l: number, read_shift(num: number, encoding?: string): any}
+type XLSXCFB$Blob = number[] | Uint8Array
+export type CustomCFB$Blob = XLSXCFB$Blob & {l: number, read_shift(num: number, encoding?: string): any}
 
 interface XLSRecord {
 	func?: (blob: CustomCFB$Blob, length: number, options?: any) => any;
@@ -29,11 +44,14 @@ const XLSRECORDENUM: XLSRecordEnum = {
     0x0809: {func: parseBOF},
 	0x0086: { },
 	0x00fc: {func: parseSST},
+	0x00fd: {func: parseLabelSST},
 	0x008c: {func: parseCountry },
 	0x0200: { /* n:"Dimensions", */ func: parseDimensions },
 	0x0208: {func: parseRow },
 	0x013d: { /* n:"RRTabId", */ func: parseUInt16a },
 	0x020b: { /* n:"Index", */ func: parseIndex },
+	0x00e0: { /* n:"XF", */ func: parseXF },
+	0x0031: { /* n:"Font", */ func: parseFont },
 }
 
 
@@ -50,7 +68,7 @@ let currentCodepage = 1200;
  * @param length 
  * @returns 
  */
-export function parseShortXLUnicodeString(blob: CustomCFB$Blob, length: number, options: any) {
+export function parseShortXLUnicodeString(blob: CustomCFB$Blob, length: number, options?: any) {
 	const cch = blob.read_shift(options && options.biff >= 12 ? 2 : 1);   // cch -> count of characters
 	let encoding = 'sbcs-cont';
 	const codepage = currentCodepage;
@@ -64,7 +82,18 @@ export function parseShortXLUnicodeString(blob: CustomCFB$Blob, length: number, 
 		encoding = 'wstr';
 	}
 	if(options && options.biff >= 2 && options.biff <= 5) encoding = 'cpstr';
-	const str = cch ? blob.read_shift(cch, encoding) : "";
+	// const str = cch ? blob.read_shift(cch, encoding) : "";
+
+	let str = '';
+	if(cch) {
+		// str = customCfbJS.read_shift(cch, encoding);
+
+		// str = xlsx.CFB.utils.ReadShift(cch, encoding)
+		str = blob.read_shift(cch, encoding)
+
+		blob.l = blob.l + cch;
+	}
+	
 	currentCodepage = codepage;
 	return str;
 }
@@ -75,6 +104,7 @@ interface XLUnicodeRichExtendedStringResult {
 
 }
 
+// TODO: cfb read_shift 不完全，要看下怎么补回xlsx里的那些代码
 /* 2.5.293 XLUnicodeRichExtendedString */
 export function parseXLUnicodeRichExtendedString(blob: CustomCFB$Blob) {
 	let codepage = currentCodepage;
@@ -140,6 +170,8 @@ interface Workbook {
 	sheetNames: string[];
 	date1904: boolean;
 	// country: string;
+	worksheet: Record<string, any>;
+	// worksheetClass: Record<string, any>;
 	wordsheets: any[];
 	refreshAll?: boolean;
 	calcCount?: number;
@@ -155,6 +187,14 @@ interface Workbook {
 	// dimensions?: any[]
 	rows: Record<string, any>[],
 	RRTabId: [];
+	LabelSst: Record<string, any>[],
+	XF: Record<string, any>[],
+	Font: Record<string, any>[],
+}
+
+class Worksheet {
+	constructor() {
+	}
 }
 
 /**
@@ -165,16 +205,26 @@ interface Workbook {
 // export function parseWorkbook(blob: CustomCFB$Blob, options?: any){
 export async function parseWorkbook(blob: any, options?: any){
 
+	const worksheet = new Worksheet();
+
 	const workbook: Workbook = {
 		sheetNames: [],
 		date1904: false,
 		// country: '',
 		wordsheets: [],
+		worksheet: {},
 		country: [],
 		dimensions: [],
 		rows: [],
-		RRTabId: []
+		RRTabId: [],
+		LabelSst: [],
+		XF: [],
+		Font: [],
+		// worksheetClass: worksheet
 	}
+ 
+
+
 	let recordTypeList = [];
     while (blob.l < blob.length - 1) {
         const recordType = blob.read_shift(2);
@@ -185,6 +235,7 @@ export async function parseWorkbook(blob: any, options?: any){
 		let value;
 		let range;
 		let sst;
+		let labelSst;
 		value = slurp(blob, size, record)
 
         if(record?.func) {
@@ -193,6 +244,7 @@ export async function parseWorkbook(blob: any, options?: any){
                 case 0x0085:   // BoundSheet8
 					// console.log('value-->123', value)
 					workbook.sheetNames.push(value)
+					workbook.worksheet[value.stName] = value
                     break;
 				case 0x0022:
 					workbook.date1904 = value;
@@ -206,6 +258,21 @@ export async function parseWorkbook(blob: any, options?: any){
 					console.log('value-->sst', value)
 					sst = value;
 					workbook.wordsheets.push(value)
+					break;
+				case 0x00fd:   /* LabelSst */
+					console.log('value-->sst', value)
+					labelSst = value;
+					workbook.LabelSst.push(value)
+					break;
+				case 0x00e0:   /* xf */
+					console.log('value-->xf', value)
+					// labelSst = value;
+					// workbook.XF.push(value)
+					break;
+				case 0x0031:   /* font */
+					console.log('value-->font', value)
+					// labelSst = value;
+					// workbook.Font.push(value)
 					break;
 				case 0x0208: /* Row */
 					workbook.rows.push(value)

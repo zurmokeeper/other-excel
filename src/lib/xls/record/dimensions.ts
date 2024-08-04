@@ -4,7 +4,13 @@ import { CustomCFB$Blob } from '../parse';
 /* [MS-XLS] 2.4.90 */
 
 // TODO:左上的问题还有问题，要+1吗
-
+/**
+ * @desc  Dimensions
+ * @param blob 
+ * @param length 
+ * @param opts 
+ * @returns 
+ */
 export function parseDimensions(blob: CustomCFB$Blob, length: number, opts: any) {
 	const end = blob.l + length;
 	// const size = opts?.biff == 8 || !opts.biff ? 4 : 2;
