@@ -4,7 +4,8 @@ import {CustomCFB$Blob} from '../../util/type';
 import {parseBoundSheet8, parseBOF, parseSST, parseLabelSST, parseCountry,
     parseDimensions, parseRow, parseXF, parseFont, parsenoop2, parseRK,
     parseExtSST, parseWriteAccess, parseUInt16a, parseBool, parseUInt16,
-    parseDBCell, parseFormat, parseDefaultRowHeight, parseMergeCells
+    parseDBCell, parseFormat, parseDefaultRowHeight, parseMergeCells,parseBlank,
+    parseHLink, parseNote
 } from './record/entry';
 import WorkBook from '../../workbook';
 
@@ -44,7 +45,10 @@ const XLSRECORDNAME = {
     Format: 'Format',
     DefaultRowHeight: 'DefaultRowHeight',
     DefColWidth: 'DefColWidth',
-    MergeCells: 'MergeCells'
+    MergeCells: 'MergeCells',
+    Blank: 'Blank',
+    HLink: 'HLink',
+    Note: 'Note'
 }
 
 const XLSRECORDENUM: XLSRecordEnum = {
@@ -54,16 +58,16 @@ const XLSRECORDENUM: XLSRecordEnum = {
 	0x00fc: {func: parseSST, name: XLSRECORDNAME.SST},
 	0x00fd: {func: parseLabelSST, name: XLSRECORDNAME.LabelSST},
 	0x008c: {func: parseCountry , name: XLSRECORDNAME.Country},
-	0x0200: { /* n:"Dimensions", */ func: parseDimensions , name: XLSRECORDNAME.Dimensions},
+	0x0200: {func: parseDimensions , name: XLSRECORDNAME.Dimensions},
 	0x0208: {func: parseRow , name: XLSRECORDNAME.Row},
-	0x013d: { /* n:"RRTabId", */ func: parseUInt16a , name: XLSRECORDNAME.RRTabId},
+	0x013d: {func: parseUInt16a , name: XLSRECORDNAME.RRTabId},
 	// 0x020b: { /* n:"Index", */ func: parseIndex, name: XLSRECORDNAME.Index },
-	0x00e0: { /* n:"XF", */ func: parseXF , name: XLSRECORDNAME.XF},
-	0x0031: { /* n:"Font", */ func: parseFont , name: XLSRECORDNAME.Font},
-    0x000a: { /* n:"EOF", */ func:parsenoop2 , name: XLSRECORDNAME.EOF},
-    0x0022: { /* n:"Date1904", */ name: XLSRECORDNAME.Date1904},
-    0x027e: { /* n:"RK", */ func: parseRK, name: XLSRECORDNAME.RK},
-    0x00ff: { /* n:"ExtSST", */ func: parseExtSST, name: XLSRECORDNAME.ExtSST},
+	0x00e0: {func: parseXF , name: XLSRECORDNAME.XF},
+	0x0031: {func: parseFont , name: XLSRECORDNAME.Font},
+    0x000a: {func: parsenoop2 , name: XLSRECORDNAME.EOF},
+    0x0022: {func: parseBool, name: XLSRECORDNAME.Date1904},
+    0x027e: {func: parseRK, name: XLSRECORDNAME.RK},
+    0x00ff: {func: parseExtSST, name: XLSRECORDNAME.ExtSST},
     0x005c: {func: parseWriteAccess, name: XLSRECORDNAME.WriteAccess },
     0x0012: {func: parseBool, name: XLSRECORDNAME.Protect },
     0x0013: {func: parseUInt16, name: XLSRECORDNAME.Password },
@@ -73,6 +77,9 @@ const XLSRECORDENUM: XLSRecordEnum = {
     0x0225: {func: parseDefaultRowHeight, name: XLSRECORDNAME.DefaultRowHeight },
     0x0055: {func: parseUInt16, name: XLSRECORDNAME.DefColWidth },
     0x00e5: {func: parseMergeCells, name: XLSRECORDNAME.MergeCells },
+    0x0201: {func: parseBlank, name: XLSRECORDNAME.Blank },
+    0x01b8: {func: parseHLink, name: XLSRECORDNAME.HLink },
+    0x001c: {func: parseNote, name: XLSRECORDNAME.Note },
 }
 
 const BOFList = [0x0009, 0x0209, 0x0409, 0x0809];
@@ -105,7 +112,7 @@ export class Parse {
         let currWorksheetInst;
     
         while (blob.l < blob.length - 1) {
-            const postion = blob.l;   // 每个record 第一个数据的偏移量
+            const position = blob.l;   // 每个record 第一个数据的偏移量
             const recordType = blob.read_shift(2);
             const size = blob.read_shift(2);
             const record = XLSRECORDENUM[recordType];
@@ -158,7 +165,7 @@ export class Parse {
                         if(file_depth) break;
                         // TODO: 处理当前wordsheet 的内容
     
-                        currSheetName = currWorksheet[postion].sheetName;
+                        currSheetName = currWorksheet[position].sheetName;
                         
                         currWorksheetInst = this.workbook.setWorksheet({sheetName: currSheetName})
 
@@ -199,6 +206,18 @@ export class Parse {
                         break;
                     case XLSRECORDNAME.ExtSST:
                         console.log('ExtSST-->', value)
+                        // this.workbook.sst = value
+                        break;
+                    case XLSRECORDNAME.Blank:
+                        console.log('Blank-->', value)
+                        // this.workbook.sst = value
+                        break;
+                    case XLSRECORDNAME.HLink:
+                        console.log('HLink-->', JSON.stringify(value) )
+                        // this.workbook.sst = value
+                        break;
+                    case XLSRECORDNAME.Note:
+                        console.log('Note-->', JSON.stringify(value) )
                         // this.workbook.sst = value
                         break;
                     case XLSRECORDNAME.Format:

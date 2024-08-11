@@ -107,3 +107,11 @@ export function parseXLUnicodeString2(blob: CustomCFB$Blob, length: number, opti
     // }
 	// return blob.read_shift(cch, (options.biff <= 4 || !blob.lens ) ? 'cpstr' : 'sbcs-cont');
 }
+
+export function parseRef8U(blob: CustomCFB$Blob, length: number) {
+	const rwFirst = blob.read_shift(2);
+	const rwLast = blob.read_shift(2);
+	const colFirst = blob.read_shift(2);
+	const colLast = blob.read_shift(2);
+	return {start:{col:colFirst, row:rwFirst}, end:{col:colLast,row:rwLast}};
+}

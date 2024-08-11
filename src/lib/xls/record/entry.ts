@@ -16,6 +16,9 @@ import { parseDBCell } from './dbCell';
 import { parseFormat } from './format';
 import { parseDefaultRowHeight } from './defaultRowHeight';
 import { parseMergeCells } from './mergeCells';
+import { parseBlank } from './blank';
+import { parseHLink } from './hLink';
+import { parseNote } from './note';
 
 
 import { CustomCFB$Blob } from '../../../util/type';
@@ -67,5 +70,8 @@ export {
     parseDBCell,
     parseFormat,
     parseDefaultRowHeight,
-    parseMergeCells
+    parseMergeCells,
+    parseBlank,
+    parseHLink,
+    parseNote
 }
