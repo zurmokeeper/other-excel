@@ -1,6 +1,3 @@
 node_modules/
 /src/util/customCfbJS.js
-lib/
-util/
-index.js
-index.js.map
+dist/
