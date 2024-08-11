@@ -5,6 +5,8 @@
 		"xlsx": "^0.18.5"
 	},
 	"devDependencies": {
-		"@types/node": "^20.11.28"
+		"@types/lodash": "^4.17.7",
+		"@types/node": "^20.11.28",
+		"lodash": "^4.17.21"
 	}
 }

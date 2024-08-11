@@ -7,6 +7,12 @@ class WorkBook {
     worksheet: Record<string, WorkSheet>;
     sst: SSTValueType;
     lastUserName: string;
+    protect: boolean;
+    password: string;
+    winProtect: boolean;
+    xfs: Array<Record<string, any>>;
+    fonts: Array<Record<string, any>>;
+    formats: Array<Record<string, any>>;
 
     constructor() {
         this.sheetNames = [];
@@ -18,6 +24,12 @@ class WorkBook {
           uniqueCount: 0
         };
         this.lastUserName = '';
+        this.protect = false;
+        this.password = '';
+        this.winProtect = false;
+        this.xfs = [];
+        this.fonts = [];
+        this.formats = [];
     }
 
       // 注册工作表的构造函数

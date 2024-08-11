@@ -12,6 +12,10 @@ import { parseFont } from './font';
 import { parseRK } from './rk';
 import { parseExtSST } from './extSst';
 import { parseWriteAccess } from './writeAccess';
+import { parseDBCell } from './dbCell';
+import { parseFormat } from './format';
+import { parseDefaultRowHeight } from './defaultRowHeight';
+import { parseMergeCells } from './mergeCells';
 
 
 import { CustomCFB$Blob } from '../../../util/type';
@@ -22,20 +26,26 @@ function parsenoop2(blob: CustomCFB$Blob, length: number) {
     return null; 
 }
 
-// function parseSlurp(blob: CustomCFB$Blob, length: number, cb: any) {
-// 	const arr = [];
-// 	const target = blob.l + length;
-// 	while(blob.l < target) {
-// 		arr.push(cb(blob, target - blob.l));
-// 	}
-// 	if(target !== blob.l) throw new Error("Slurp error");
-// 	return arr;
-// }
+function parseSlurp(blob: CustomCFB$Blob, length: number, cb: any) {
+	const arr = [];
+	const target = blob.l + length;
+	while(blob.l < target) {
+		arr.push(cb(blob, target - blob.l));
+	}
+	if(target !== blob.l) throw new Error("Slurp error");
+	return arr;
+}
 
-// function parseUInt16a(blob: CustomCFB$Blob, length: number) { 
-// 	return parseSlurp(blob, length, parseUInt16);
-// }
-// xx
+function parseUInt16(blob: CustomCFB$Blob) { 
+	return blob.read_shift(2, 'u'); 
+}
+
+function parseUInt16a(blob: CustomCFB$Blob, length: number) { 
+	return parseSlurp(blob, length, parseUInt16);
+}
+function parseBool(blob: CustomCFB$Blob, length: number) { 
+    return blob.read_shift(length) === 0x1; 
+}
 
 export {
     parseBoundSheet8,
@@ -50,5 +60,12 @@ export {
     parsenoop2,
     parseRK,
     parseExtSST,
-    parseWriteAccess
+    parseWriteAccess,
+    parseUInt16a,
+    parseBool,
+    parseUInt16,
+    parseDBCell,
+    parseFormat,
+    parseDefaultRowHeight,
+    parseMergeCells
 }

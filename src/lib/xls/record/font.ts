@@ -33,5 +33,7 @@ export function parseFont(blob: CustomCFB$Blob, length: number) {
 
     // 剩余 6个字节
     const fontName = parseShortXLUnicodeString(blob, 0);
-    return { dyHeight: dyHeight, fontName: fontName}
+    return { dyHeight: dyHeight, fontName: fontName, fItalic, fStrikeOut,
+        fShadow, fCondense, fExtend, uls, bCharSet
+    }
 }

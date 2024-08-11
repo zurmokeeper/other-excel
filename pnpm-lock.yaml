@@ -1,8 +1,10 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@types/lodash': ^4.17.7
   '@types/node': ^20.11.28
   cfb: ^1.2.2
+  lodash: ^4.17.21
   typescript: ^5.4.2
   xlsx: ^0.18.5
 
@@ -12,9 +14,15 @@ dependencies:
   xlsx: 0.18.5
 
 devDependencies:
+  '@types/lodash': 4.17.7
   '@types/node': 20.14.12
+  lodash: 4.17.21
 
 packages:
+
+  /@types/lodash/4.17.7:
+    resolution: {integrity: sha512-8wTvZawATi/lsmNu10/j2hk1KEP0IvjubqPE3cu1Xz7xfXXt5oCq3SNUz4fMIP4XGF9Ky+Ue2tBA3hcS7LSBlA==}
+    dev: true
 
   /@types/node/20.14.12:
     resolution: {integrity: sha512-r7wNXakLeSsGT0H1AU863vS2wa5wBOK4bWMjZz2wj+8nBx+m5PeIn0k8AloSLpRuiwdRQZwarZqHE4FNArPuJQ==}
@@ -50,6 +58,10 @@ packages:
     resolution: {integrity: sha512-w/XBfkibaTl3YDqASwfDUqkna4Z2p9cFSr1aHDt0WoMTECnRfBOv2WArlZILlqgWlmdIlALXGpM2AOhEk5W3IA==}
     engines: {node: '>=0.8'}
     dev: false
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: true
 
   /ssf/0.11.2:
     resolution: {integrity: sha512-+idbmIXoYET47hH+d7dfm2epdOMUDjqcB4648sTZ+t2JwoyBFL/insLfB/racrDmsKB3diwsDA696pZMieAC5g==}

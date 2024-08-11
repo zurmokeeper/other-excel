@@ -10,6 +10,9 @@ class WorkSheet {
     labelSst: Array<Record<string, any>>;
     dimensions: Array<Record<string, any>>;
     rks: Array<Record<string, any>>;
+    defaultRowHeight: number;
+    defaultColWidth: number;
+    mergeCells: Array<Record<string, any>>;
 
     constructor(options: Options) {
         this.index = 0;
@@ -17,6 +20,9 @@ class WorkSheet {
         this.labelSst = [];
         this.dimensions = [];
         this.rks = [];
+        this.defaultRowHeight = 0;
+        this.defaultColWidth = 0;
+        this.mergeCells = [];
     }
 
     getRow(){
@@ -28,7 +34,8 @@ class WorkSheet {
       console.log('xxxx', this.name)
       console.log('xxxx', this.labelSst)
     //   console.log('xxxx', this.dimensions)
-      console.log('rks', this.rks)
+    //   console.log('rks', this.rks)
+      console.log('mergeCells', JSON.stringify(this.mergeCells))
     }
 
     // parse(value: any) {

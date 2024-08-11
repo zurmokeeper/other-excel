@@ -3,7 +3,8 @@ import XLSX from 'xlsx';
 import {CustomCFB$Blob} from '../../util/type';
 import {parseBoundSheet8, parseBOF, parseSST, parseLabelSST, parseCountry,
     parseDimensions, parseRow, parseXF, parseFont, parsenoop2, parseRK,
-    parseExtSST, parseWriteAccess
+    parseExtSST, parseWriteAccess, parseUInt16a, parseBool, parseUInt16,
+    parseDBCell, parseFormat, parseDefaultRowHeight, parseMergeCells
 } from './record/entry';
 import WorkBook from '../../workbook';
 
@@ -35,19 +36,27 @@ const XLSRECORDNAME = {
     Date1904: 'date1904',
     RK: 'RK',
     ExtSST: 'ExtSST',
-    WriteAccess: 'WriteAccess'
+    WriteAccess: 'WriteAccess',
+    Protect: 'Protect',
+    Password: 'Password',
+    WinProtect: 'WinProtect',
+    DBCell: 'DBCell',
+    Format: 'Format',
+    DefaultRowHeight: 'DefaultRowHeight',
+    DefColWidth: 'DefColWidth',
+    MergeCells: 'MergeCells'
 }
 
 const XLSRECORDENUM: XLSRecordEnum = {
     0x0085: {func: parseBoundSheet8, name: XLSRECORDNAME.BoundSheet8},
     0x0809: {func: parseBOF, name: XLSRECORDNAME.BOF},
-	0x0086: {name: XLSRECORDNAME.WriteProtect },
+	// 0x0086: {name: XLSRECORDNAME.WriteProtect },
 	0x00fc: {func: parseSST, name: XLSRECORDNAME.SST},
 	0x00fd: {func: parseLabelSST, name: XLSRECORDNAME.LabelSST},
 	0x008c: {func: parseCountry , name: XLSRECORDNAME.Country},
 	0x0200: { /* n:"Dimensions", */ func: parseDimensions , name: XLSRECORDNAME.Dimensions},
 	0x0208: {func: parseRow , name: XLSRECORDNAME.Row},
-	// 0x013d: { /* n:"RRTabId", */ func: parseUInt16a , name: XLSRECORDNAME.RRTabId},
+	0x013d: { /* n:"RRTabId", */ func: parseUInt16a , name: XLSRECORDNAME.RRTabId},
 	// 0x020b: { /* n:"Index", */ func: parseIndex, name: XLSRECORDNAME.Index },
 	0x00e0: { /* n:"XF", */ func: parseXF , name: XLSRECORDNAME.XF},
 	0x0031: { /* n:"Font", */ func: parseFont , name: XLSRECORDNAME.Font},
@@ -56,6 +65,14 @@ const XLSRECORDENUM: XLSRecordEnum = {
     0x027e: { /* n:"RK", */ func: parseRK, name: XLSRECORDNAME.RK},
     0x00ff: { /* n:"ExtSST", */ func: parseExtSST, name: XLSRECORDNAME.ExtSST},
     0x005c: {func: parseWriteAccess, name: XLSRECORDNAME.WriteAccess },
+    0x0012: {func: parseBool, name: XLSRECORDNAME.Protect },
+    0x0013: {func: parseUInt16, name: XLSRECORDNAME.Password },
+    0x0019: {func: parseBool, name: XLSRECORDNAME.WinProtect },
+    0x00d7: {func: parseDBCell, name: XLSRECORDNAME.DBCell },
+    0x041e: {func: parseFormat, name: XLSRECORDNAME.Format },
+    0x0225: {func: parseDefaultRowHeight, name: XLSRECORDNAME.DefaultRowHeight },
+    0x0055: {func: parseUInt16, name: XLSRECORDNAME.DefColWidth },
+    0x00e5: {func: parseMergeCells, name: XLSRECORDNAME.MergeCells },
 }
 
 const BOFList = [0x0009, 0x0209, 0x0409, 0x0809];
@@ -116,6 +133,22 @@ export class Parse {
                         console.log('lastUserName-->', value)
                         this.workbook.lastUserName = value;
                         break;
+                    case XLSRECORDNAME.RRTabId:
+                        console.log('rrtabid-->', value)
+                        // this.workbook.rrtabid = value;
+                        break;
+                    case XLSRECORDNAME.Protect:
+                        console.log('Protect-->', value)
+                        this.workbook.protect = value;
+                        break;
+                    case XLSRECORDNAME.Password:
+                        console.log('Password-->', value)
+                        this.workbook.password = value;
+                        break;
+                    case XLSRECORDNAME.WinProtect:
+                            console.log('WinProtect-->', value)
+                            this.workbook.winProtect = value;
+                            break;
                     case XLSRECORDNAME.BoundSheet8:
                         currWorksheet[value.pos] = value;
                         this.workbook.sheetNames.push(value.sheetName)
@@ -134,16 +167,43 @@ export class Parse {
                         break;
                     case XLSRECORDNAME.LabelSST:
                         value.value = this.workbook.sst.strs[value.isst]
+                        value.xf = this.workbook.xfs[value.cell.indexOfXFCell];
 
                         currWorksheetInst?.labelSst.push(value)
+                        break;
+                    // case XLSRECORDNAME.DefaultRowHeight:
+                    //     if(currWorksheetInst) {
+                    //         currWorksheetInst.defaultRowHeight = value;
+                    //     }
+                    //     break;
+                    case XLSRECORDNAME.DefColWidth:
+                        console.log('DefColWidth-->', value)
+                        if(currWorksheetInst) {
+                            currWorksheetInst.defaultColWidth = value;
+                        }
+                        break;
+                    case XLSRECORDNAME.MergeCells:
+                        currWorksheetInst?.mergeCells.push(value)
                         break;
                     case XLSRECORDNAME.SST:
 
                         this.workbook.sst = value
                         break;
+                    case XLSRECORDNAME.XF:
+                        // console.log('XF-->', value)
+                        this.workbook.xfs.push(value)
+                        break;
+                    case XLSRECORDNAME.Font:
+                        // console.log('XF-->', value)
+                        this.workbook.fonts.push(value)
+                        break;
                     case XLSRECORDNAME.ExtSST:
                         console.log('ExtSST-->', value)
                         // this.workbook.sst = value
+                        break;
+                    case XLSRECORDNAME.Format:
+                        // console.log('Format-->', value)
+                        this.workbook.formats.push(value);
                         break;
                     case XLSRECORDNAME.Dimensions:
 
@@ -152,9 +212,13 @@ export class Parse {
                     case XLSRECORDNAME.Country:
                         console.log('Country-->', value)
                         // currWorksheetInst?.dimensions.push(value)
-                        break;   
+                        break; 
+                    case XLSRECORDNAME.DBCell:
+                        console.log('DBCell-->', value)
+                        break;    
                     case XLSRECORDNAME.RK:
 
+                        value.xf = this.workbook.xfs[value.ixfe];
                         currWorksheetInst?.rks.push(value)
                         break;
                     case XLSRECORDNAME.EOF:
