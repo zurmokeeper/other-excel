@@ -1,17 +1,29 @@
 import WorkSheet from './worksheet';
-import {parseWorkbook} from './lib/xls/parsev2';
-
+import {SSTValueType} from './util/type';
 
 class WorkBook {
     sheetNames: Array<string>;
     date1904: boolean;
     worksheet: Record<string, WorkSheet>;
+    sst: SSTValueType;
+    lastUserName: string;
 
     constructor() {
         this.sheetNames = [];
         this.date1904 = false;
         this.worksheet = {};
+        this.sst = {
+          strs: [],
+          count: 0,
+          uniqueCount: 0
+        };
+        this.lastUserName = '';
     }
+
+      // 注册工作表的构造函数
+    // registerWorkSheet(name: string, ctor: new (options: Options) => WorkSheet) {
+    //     this.worksheet[name] = ctor;
+    // }
 
     getWorksheet(id: number | string) {
         // if (!this.workbook) {
@@ -23,9 +35,15 @@ class WorkBook {
           if (!sheetName) {
             throw new Error(`Worksheet at index ${id} not found.`);
           }
-          return new WorkSheet({id: sheetName});
+          return this.worksheet[sheetName];
+
         }
-        return new WorkSheet({id: id});
+        return this.worksheet[id];
+    }
+
+    setWorksheet(value: { sheetName: string }): WorkSheet {
+      this.worksheet[value.sheetName] = new WorkSheet({ name: value.sheetName });
+      return this.worksheet[value.sheetName];
     }
 
 }

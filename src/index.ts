@@ -7,17 +7,12 @@ import * as fs from 'fs';
 import XLSX from 'xlsx';
 import { parseWorkbook } from './lib/xls/parse';
 import WorkBook from './workbook';
-import { parseWorkbook as parseWorkbookV2, Parse } from './lib/xls/parsev2';
+import { Parse } from './lib/xls/parsev2';
 
 type Options = {
   type?: 'base64' | 'buffer' | 'stream';
 }
 
-
-// const ExcelJS = require('exceljs');
-// let workbook = new ExcelJS.Workbook();
-// workbook.xlsx.readFile('path/to/your/excel/file.xlsx')
-// const worksheet = workbook.getWorksheet(1);
 
 class Excel {
   workbook: WorkBook;
@@ -65,13 +60,7 @@ class Excel {
       throw new Error('Unsupported data type');
     }
   
-    // parseWorkbook(Workbook.content)
-    // parseWorkbook(Workbook.content)
-
-    // parseWorkbookV2(Workbook.content, options, this.workbook)
-
-    // this.workbook.parse(Workbook.content, options)
-
+ 
     const parse = new Parse(this.workbook)
     parse.parse(Workbook.content, options)
   
@@ -115,48 +104,6 @@ class Excel {
 }
 
 export default Excel;
-
-// class ExcelTest {
-//   read(){
-//     console.log('read')
-//     return new WorkBook()
-//   }
-// }
-
-// export default ExcelTest;
-
-// class WorkSheet {
-//   getCell(){
-//     console.log('xxxx')
-// }
-// }
-
-// class WorkBook {
-//   getWorksheet(){
-//       console.log('xxxx')
-//       return new WorkSheet()
-//   }
-// }
-
-// const otherExcel = {
-//   WorkBook: WorkBook
-// }
-
-// export default otherExcel;
-
-// read('../tests/test1.xls')
-// read('./tests/test1.xls')
-
-// const otherExcel = new Excel();
-// const workbook = otherExcel.read('./tests/test1.xls')
-
-async function name() {
-  const otherExcel = new Excel();
-  const workbook = await otherExcel.read('./tests/test1.xls')
-  // const worksheet = workbook.getWorksheet(1);
-}
-
-// name()
 
 
 

@@ -1,6 +1,6 @@
 
-import { parseXLUnicodeRichExtendedString } from '../parse';
 import { CustomCFB$Blob } from '../../../util/type';
+import { parseXLUnicodeRichExtendedString } from '../../../util/charsetParseUtil';
 
 
 /**

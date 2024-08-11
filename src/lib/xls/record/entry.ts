@@ -9,6 +9,10 @@ import { parseRow } from './row';
 import { parseLabelSST } from './labelSst';
 import { parseXF } from './xf';
 import { parseFont } from './font';
+import { parseRK } from './rk';
+import { parseExtSST } from './extSst';
+import { parseWriteAccess } from './writeAccess';
+
 
 import { CustomCFB$Blob } from '../../../util/type';
 
@@ -43,5 +47,8 @@ export {
     parseLabelSST,
     parseXF,
     parseFont,
-    parsenoop2
+    parsenoop2,
+    parseRK,
+    parseExtSST,
+    parseWriteAccess
 }

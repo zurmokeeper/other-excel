@@ -1,5 +1,5 @@
 import { CustomCFB$Blob } from '../../../util/type';
-import { parseShortXLUnicodeString } from '../parse';
+import { parseShortXLUnicodeString } from '../../../util/charsetParseUtil';
 
 /**
  * @desc [MS-XLS] 2.4.28
@@ -23,6 +23,5 @@ export function parseBoundSheet8(blob: CustomCFB$Blob, length: number, options: 
 	}
 	let stName = parseShortXLUnicodeString(blob, 0, options);
 	if(stName?.length === 0) stName = "Sheet1";
-	return { pos: lbPlyPos, hsState: hsState, dt:dt, stName: stName };
-	// return { pos: lbPlyPos, hiddenState: hsState, dt:dt, sheetName: stName };
+	return { pos: lbPlyPos, hiddenState: hsState, dt:dt, sheetName: stName };
 }
