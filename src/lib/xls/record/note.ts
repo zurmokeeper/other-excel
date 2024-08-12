@@ -1,5 +1,6 @@
 import { CustomCFB$Blob } from '../../../util/type';
 import { parseXLUnicodeString2 } from '../../../util/charsetParseUtil';
+import { getBit, getBitSlice } from '../../../util/index';
 
 /**
  * @desc [MS-XLS] 2.4.107
@@ -16,9 +17,19 @@ export function parseNote(blob: CustomCFB$Blob, length: number, options?: any){
 /* [MS-XLS] 2.5.186 TODO: BIFF5 */
 function parseNoteSh(blob: CustomCFB$Blob, length: number, options?: any) {
 	if(options?.biff < 8) return;
-	var row = blob.read_shift(2), col = blob.read_shift(2);
-	var flags = blob.read_shift(2), idObj = blob.read_shift(2);
-	var stAuthor = parseXLUnicodeString2(blob, 0, options);
+	const row = blob.read_shift(2);
+	const col = blob.read_shift(2);
+	const buffer = blob.read_shift(2);
+
+	const fShow = getBit(buffer, 1);
+	const fRwHidden = getBit(buffer, 7);
+	const fColHidden = getBit(buffer, 8);
+
+	const idObj = blob.read_shift(2);
+	const stAuthor = parseXLUnicodeString2(blob, 0, options);
 	if(options?.biff < 8) blob.read_shift(1);
-	return [{r:row,c:col}, stAuthor, idObj, flags];
+	// return [{r:row,c:col}, stAuthor, idObj, flags];
+	return {cell: {row:row, col:col}, stAuthor, idObj, fShow, fRwHidden, fColHidden};
 }
+
+// 先Obj Tx0 Note

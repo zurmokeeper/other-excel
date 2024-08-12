@@ -71,7 +71,7 @@ export function parseXLUnicodeRichExtendedString(blob: CustomCFB$Blob) {
 }
 
 /* 2.5.296 XLUnicodeStringNoCch */
-function parseXLUnicodeStringNoCch(blob: CustomCFB$Blob, cch: number, options?: any) {
+export function parseXLUnicodeStringNoCch(blob: CustomCFB$Blob, cch: number, options?: any) {
 	let retval;
 	if(options) {
 		if(options.biff >= 2 && options.biff <= 5) return blob.read_shift(cch, 'cpstr');
@@ -114,4 +114,8 @@ export function parseRef8U(blob: CustomCFB$Blob, length: number) {
 	const colFirst = blob.read_shift(2);
 	const colLast = blob.read_shift(2);
 	return {start:{col:colFirst, row:rwFirst}, end:{col:colLast,row:rwLast}};
+}
+
+export function parseUInt16(blob: CustomCFB$Blob, length?: number) { 
+	return blob.read_shift(2, 'u'); 
 }

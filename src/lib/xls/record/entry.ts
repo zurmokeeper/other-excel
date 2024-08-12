@@ -19,6 +19,8 @@ import { parseMergeCells } from './mergeCells';
 import { parseBlank } from './blank';
 import { parseHLink } from './hLink';
 import { parseNote } from './note';
+import { parseObj } from './obj';
+import { parseTxO } from './txO';
 
 
 import { CustomCFB$Blob } from '../../../util/type';
@@ -73,5 +75,7 @@ export {
     parseMergeCells,
     parseBlank,
     parseHLink,
-    parseNote
+    parseNote,
+    parseObj,
+    parseTxO
 }

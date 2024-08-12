@@ -5,7 +5,7 @@ import {parseBoundSheet8, parseBOF, parseSST, parseLabelSST, parseCountry,
     parseDimensions, parseRow, parseXF, parseFont, parsenoop2, parseRK,
     parseExtSST, parseWriteAccess, parseUInt16a, parseBool, parseUInt16,
     parseDBCell, parseFormat, parseDefaultRowHeight, parseMergeCells,parseBlank,
-    parseHLink, parseNote
+    parseHLink, parseNote, parseObj, parseTxO
 } from './record/entry';
 import WorkBook from '../../workbook';
 
@@ -48,7 +48,9 @@ const XLSRECORDNAME = {
     MergeCells: 'MergeCells',
     Blank: 'Blank',
     HLink: 'HLink',
-    Note: 'Note'
+    Note: 'Note',
+    Obj: 'Obj',
+    TxO: 'TxO'
 }
 
 const XLSRECORDENUM: XLSRecordEnum = {
@@ -80,6 +82,8 @@ const XLSRECORDENUM: XLSRecordEnum = {
     0x0201: {func: parseBlank, name: XLSRECORDNAME.Blank },
     0x01b8: {func: parseHLink, name: XLSRECORDNAME.HLink },
     0x001c: {func: parseNote, name: XLSRECORDNAME.Note },
+    0x005d: {func: parseObj, name: XLSRECORDNAME.Obj },
+    0x01b6: {func: parseTxO, name: XLSRECORDNAME.TxO },
 }
 
 const BOFList = [0x0009, 0x0209, 0x0409, 0x0809];
@@ -219,6 +223,9 @@ export class Parse {
                     case XLSRECORDNAME.Note:
                         console.log('Note-->', JSON.stringify(value) )
                         // this.workbook.sst = value
+                        break;
+                    case XLSRECORDNAME.Obj:
+                        console.log('Obj-->', JSON.stringify(value))
                         break;
                     case XLSRECORDNAME.Format:
                         // console.log('Format-->', value)
