@@ -5,7 +5,7 @@
 import * as fs from 'fs';
 // import * as CFB from 'cfb';
 import XLSX from 'xlsx';
-import { parseWorkbook } from './lib/xls/parse';
+// import { parseWorkbook } from './lib/xls/parse';
 import WorkBook from './workbook';
 import { Parse } from './lib/xls/parsev2';
 

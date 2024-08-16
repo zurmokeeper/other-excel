@@ -50,7 +50,8 @@ const XLSRECORDNAME = {
     HLink: 'HLink',
     Note: 'Note',
     Obj: 'Obj',
-    TxO: 'TxO'
+    TxO: 'TxO',
+    Continue: 'Continue'
 }
 
 const XLSRECORDENUM: XLSRecordEnum = {
@@ -84,19 +85,80 @@ const XLSRECORDENUM: XLSRecordEnum = {
     0x001c: {func: parseNote, name: XLSRECORDNAME.Note },
     0x005d: {func: parseObj, name: XLSRECORDNAME.Obj },
     0x01b6: {func: parseTxO, name: XLSRECORDNAME.TxO },
+    0x003c: {name: XLSRECORDNAME.Continue},
 }
 
 const BOFList = [0x0009, 0x0209, 0x0409, 0x0809];
 
+/*
+	Continue logic for:
+	- 2.4.58 Continue          0x003c
+	- 2.4.59 ContinueBigName   0x043c
+	- 2.4.60 ContinueFrt       0x0812
+	- 2.4.61 ContinueFrt11     0x0875
+	- 2.4.62 ContinueFrt12     0x087f
+*/
+const CONTINUERT = [ 0x003c, 0x043c, 0x0812, 0x0875, 0x087f ];
 
+// blob.l 是正式内容的偏移量开头了，已经读了 num 和 size 了
 function slurp(blob: any, length: number, record: XLSRecord){
 	const data = blob.slice(blob.l, blob.l + length);
 	blob.l += length;
-	CFB.utils.prep_blob(data, 0);
+	// CFB.utils.prep_blob(data, 0);
 	if(!record || !record.func) {  // TODO: 想想这些没有func的要怎么处理
 		return {};
 	}
-	const result = record.func(data, length);
+    const buf = [];
+    buf.push(data)
+
+    // let nextRecordType = blob.read_shift(2);
+    let nextRecordType = blob.readUInt16LE(blob.l);
+    let nextFunc = XLSRECORDENUM[nextRecordType];
+    while(nextFunc != null && CONTINUERT.includes(nextRecordType)) {
+        // l = __readUInt16LE(blob,blob.l+2);
+		// start = blob.l + 4;
+		// if(nextrt == 0x0812 /* ContinueFrt */) {
+        //     start += 4;
+        // }
+		// else if(nextrt == 0x0875 || nextrt == 0x087f) {
+		// 	start += 12;
+		// }
+		// d = blob.slice(start,blob.l+4+l);
+        // bufs.push(d);
+		// blob.l += 4+l;
+		// next = (XLSRecordEnum[nextrt = __readUInt16LE(blob, blob.l)]);
+
+        blob.l += 2; // skip num
+        const continueSize = blob.read_shift(2);
+        let start = blob.l;
+        if(nextRecordType == 0x0812 /* ContinueFrt */) {
+            start += 4;
+        } else if(nextRecordType == 0x0875 || nextRecordType == 0x087f) {
+			start += 12;
+		}
+        const continueData = blob.slice(start, blob.l + continueSize);
+        blob.l += continueSize;
+
+		buf.push(continueData);
+		nextFunc = XLSRECORDENUM[nextRecordType = blob.read_shift(2)];
+	}
+    const totalData = Buffer.concat(buf) as CustomCFB$Blob;
+    CFB.utils.prep_blob(totalData, 0);
+
+    let len = 0;  //  continue 前一个记录的数据部分长度
+    totalData.continuePartDataLens = []
+	for(let j = 0; j < buf.length; j++) { 
+        totalData.continuePartDataLens.push(len); 
+        len += buf[j].length;
+    }
+    // totalData.lens 是一个数组, 
+    // 第1个元素是 0
+    // 第2个元素 continue 前一个记录的数据部分长度
+    // ...第3个元素 前2个元素数据部分长度的总和
+    // ...第4个元素 前3个元素数据部分长度的总和
+    if(totalData.length < length) throw "XLS Record 0x";
+
+	const result = record.func(totalData, length);
 	return result;
 }
 

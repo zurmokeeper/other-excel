@@ -1,5 +1,5 @@
 import OtherExcel from './index';
-import _ from 'lodash';
+// import _ from 'lodash';
 
 
 async function name() {

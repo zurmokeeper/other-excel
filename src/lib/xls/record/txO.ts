@@ -2,36 +2,55 @@ import { CustomCFB$Blob } from '../../../util/type';
 import { parseUInt16, parseXLUnicodeStringNoCch } from '../../../util/charsetParseUtil';
 
 
-/* [MS-XLS] 2.5.61 ControlInfo */
-function parse_ControlInfo(blob: CustomCFB$Blob, length: number, options?: any) {
-	var flags = blob.read_shift(1);
+/**
+ * @desc [MS-XLS] 2.5.61 ControlInfo
+ * 
+ * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/20019365-5759-4b79-bd44-a8a493b79f3b
+ * @param blob 
+ * @param length 
+ * @returns 
+ */
+function parseControlInfo(blob: CustomCFB$Blob, length: number, options?: any) {
+	const flags = blob.read_shift(1);
 	blob.l++;
-	var accel = blob.read_shift(2);
-	blob.l += 2;
-	return [flags, accel];
+	const accel = blob.read_shift(2);
+	blob.l += 2;   // skip reserved2 (2 bytes)
+	return {flags, accel};
 }
 
-/* [MS-XLS] 2.4.329 TODO: parse properly */
+/**
+ * @desc [MS-XLS] 2.4.329 TxO
+ * The TxO record specifies the text in a text box or a form control. This record can be followed by a collection of Continue records that specifies additional feature data to complete this record, as follows:
+ * TxO 记录指定文本框或表单控件中的文本。此记录后面可以跟一个 Continue 记录集合，该集合指定其他要素数据以完成此记录，如下所示：
+ * 
+ * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/638c08e6-2942-4783-b71b-144ccf758fc7
+ * @param blob 
+ * @param length 
+ * @returns 
+ */
 export function parseTxO(blob: CustomCFB$Blob, length: number, options?: any) {
-	var s = blob.l;
-	var texts = "";
+	const position = blob.l;
+	let texts = "";
     try {
         blob.l += 4;
-        var ot = (options.lastobj||{cmo:[0,0]}).cmo[1];
-        var controlInfo; // eslint-disable-line no-unused-vars
-        if([0,5,7,11,12,14].indexOf(ot) == -1) blob.l += 6;
-        else controlInfo = parse_ControlInfo(blob, 6, options); // eslint-disable-line no-unused-vars
-        var cchText = blob.read_shift(2);
-        /*var cbRuns = */blob.read_shift(2);
-        /*var ifntEmpty = */parseUInt16(blob, 2);
-        var len = blob.read_shift(2);
-        blob.l += len;
-        //var fmla = parse_ObjFmla(blob, s + length - blob.l);
+        const objectType = (options.lastobj||{cmo:[0,0]}).cmo[1];
+        let controlInfo;
+        if(![0,5,7,11,12,14].includes(objectType)) {
+            blob.l += 6;  // skip reserved4 (2 bytes) + reserved5 (4 bytes)
+        } else {
+            controlInfo = parseControlInfo(blob, 6, options);
+        }
+        const cchText = blob.read_shift(2);
+        const cbRuns = blob.read_shift(2);
+        const ifntEmpty = parseUInt16(blob, 2);
+        const objFmlaLength = blob.read_shift(2);
+        blob.l += objFmlaLength;  // skip objFmla
+        //const fmla = parseObjFmla(blob, position + length - blob.l);
 
-        for(var i = 1; i < blob.lens.length-1; ++i) {
-            if(blob.l-s != blob.lens[i]) throw new Error("TxO: bad continue record");
+        for(let i = 1; i < blob.continuePartDataLens.length - 1; ++i) {
+            if(blob.l-position != blob.continuePartDataLens[i]) throw new Error("TxO: bad continue record");
             var hdr = blob[blob.l];
-            var t = parseXLUnicodeStringNoCch(blob, blob.lens[i+1]-blob.lens[i]-1);
+            var t = parseXLUnicodeStringNoCch(blob, blob.continuePartDataLens[i+1] - blob.continuePartDataLens[i]-1);
             texts += t;
             if(texts.length >= (hdr ? cchText : 2*cchText)) break;
         }
@@ -39,14 +58,17 @@ export function parseTxO(blob: CustomCFB$Blob, length: number, options?: any) {
             throw new Error("cchText: " + cchText + " != " + texts.length);
         }
 
-        blob.l = s + length;
+        blob.l = position + length;
         /* [MS-XLS] 2.5.272 TxORuns */
     //	var rgTxoRuns = [];
     //	for(var j = 0; j != cbRuns/8-1; ++j) blob.l += 8;
     //	var cchText2 = blob.read_shift(2);
     //	if(cchText2 !== cchText) throw new Error("TxOLastRun mismatch: " + cchText2 + " " + cchText);
     //	blob.l += 6;
-    //	if(s + length != blob.l) throw new Error("TxO " + (s + length) + ", at " + blob.l);
+    //	if(position + length != blob.l) throw new Error("TxO " + (position + length) + ", at " + blob.l);
         return { t: texts };
-    } catch(e) { blob.l = s + length; return { t: texts }; }
+    } catch(e) { 
+        blob.l = position + length; 
+        return { t: texts }; 
+    }
 }
