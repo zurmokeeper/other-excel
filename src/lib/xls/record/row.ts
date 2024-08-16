@@ -57,7 +57,7 @@ for row 3 to be left-aligned and not define any individual cells in row 3.
 */
 
 type DataType = {
-    rw: number;
+    row: number;
     colMic: number;
     level: number;
     hidden: boolean;
@@ -68,14 +68,14 @@ type DataType = {
 /* [MS-XLS] 2.4.221 TODO: check BIFF2-4 */
 export function parseRow(blob: CustomCFB$Blob) {
 	const o: DataType = {
-        rw: 0,
+        row: 0,
         colMic: 0,
         level: 0,
         hidden: false,
         hpt: 0,
         cnt: 0
     };
-	o.rw = blob.read_shift(2);
+	o.row = blob.read_shift(2);
 	o.colMic = blob.read_shift(2);
 	o.cnt = blob.read_shift(2) - o.colMic;
 	const miyRw = blob.read_shift(2);

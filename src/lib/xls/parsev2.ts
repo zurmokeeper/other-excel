@@ -5,7 +5,7 @@ import {parseBoundSheet8, parseBOF, parseSST, parseLabelSST, parseCountry,
     parseDimensions, parseRow, parseXF, parseFont, parsenoop2, parseRK,
     parseExtSST, parseWriteAccess, parseUInt16a, parseBool, parseUInt16,
     parseDBCell, parseFormat, parseDefaultRowHeight, parseMergeCells,parseBlank,
-    parseHLink, parseNote, parseObj, parseTxO
+    parseHLink, parseNote, parseObj, parseTxO, parseColInfo, parseMulBlank
 } from './record/entry';
 import WorkBook from '../../workbook';
 
@@ -51,7 +51,9 @@ const XLSRECORDNAME = {
     Note: 'Note',
     Obj: 'Obj',
     TxO: 'TxO',
-    Continue: 'Continue'
+    Continue: 'Continue',
+    ColInfo: 'ColInfo',
+    MulBlank: 'MulBlank'
 }
 
 const XLSRECORDENUM: XLSRecordEnum = {
@@ -86,6 +88,8 @@ const XLSRECORDENUM: XLSRecordEnum = {
     0x005d: {func: parseObj, name: XLSRECORDNAME.Obj },
     0x01b6: {func: parseTxO, name: XLSRECORDNAME.TxO },
     0x003c: {name: XLSRECORDNAME.Continue},
+    0x007d: {func: parseColInfo, name: XLSRECORDNAME.ColInfo },
+    0x00be: {func: parseMulBlank, name: XLSRECORDNAME.MulBlank },
 }
 
 const BOFList = [0x0009, 0x0209, 0x0409, 0x0809];
@@ -111,22 +115,9 @@ function slurp(blob: any, length: number, record: XLSRecord){
     const buf = [];
     buf.push(data)
 
-    // let nextRecordType = blob.read_shift(2);
     let nextRecordType = blob.readUInt16LE(blob.l);
     let nextFunc = XLSRECORDENUM[nextRecordType];
     while(nextFunc != null && CONTINUERT.includes(nextRecordType)) {
-        // l = __readUInt16LE(blob,blob.l+2);
-		// start = blob.l + 4;
-		// if(nextrt == 0x0812 /* ContinueFrt */) {
-        //     start += 4;
-        // }
-		// else if(nextrt == 0x0875 || nextrt == 0x087f) {
-		// 	start += 12;
-		// }
-		// d = blob.slice(start,blob.l+4+l);
-        // bufs.push(d);
-		// blob.l += 4+l;
-		// next = (XLSRecordEnum[nextrt = __readUInt16LE(blob, blob.l)]);
 
         blob.l += 2; // skip num
         const continueSize = blob.read_shift(2);
@@ -140,7 +131,7 @@ function slurp(blob: any, length: number, record: XLSRecord){
         blob.l += continueSize;
 
 		buf.push(continueData);
-		nextFunc = XLSRECORDENUM[nextRecordType = blob.read_shift(2)];
+		nextFunc = XLSRECORDENUM[nextRecordType = blob.readUInt16LE(blob.l)];
 	}
     const totalData = Buffer.concat(buf) as CustomCFB$Blob;
     CFB.utils.prep_blob(totalData, 0);
@@ -278,6 +269,14 @@ export class Parse {
                         console.log('Blank-->', value)
                         // this.workbook.sst = value
                         break;
+                    case XLSRECORDNAME.Row:
+                        console.log('Row-->', JSON.stringify(value) )
+                        // this.workbook.sst = value
+                        break;
+                    case XLSRECORDNAME.ColInfo:
+                        console.log('ColInfo-->', JSON.stringify(value) )
+                        // this.workbook.sst = value
+                        break;
                     case XLSRECORDNAME.HLink:
                         console.log('HLink-->', JSON.stringify(value) )
                         // this.workbook.sst = value
@@ -304,6 +303,12 @@ export class Parse {
                     case XLSRECORDNAME.DBCell:
                         console.log('DBCell-->', value)
                         break;    
+                    case XLSRECORDNAME.TxO:
+                        console.log('TxO-->', value)
+                        break;    
+                    case XLSRECORDNAME.MulBlank:
+                        console.log('MulBlank-->', value)
+                        break;   
                     case XLSRECORDNAME.RK:
 
                         value.xf = this.workbook.xfs[value.ixfe];

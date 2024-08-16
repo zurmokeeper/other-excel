@@ -21,6 +21,8 @@ import { parseHLink } from './hLink';
 import { parseNote } from './note';
 import { parseObj } from './obj';
 import { parseTxO } from './txO';
+import { parseColInfo } from './colInfo';
+import { parseMulBlank } from './mulBlank';
 
 
 import { CustomCFB$Blob } from '../../../util/type';
@@ -77,5 +79,7 @@ export {
     parseHLink,
     parseNote,
     parseObj,
-    parseTxO
+    parseTxO,
+    parseColInfo,
+    parseMulBlank
 }

@@ -33,7 +33,8 @@ export function parseTxO(blob: CustomCFB$Blob, length: number, options?: any) {
 	let texts = "";
     try {
         blob.l += 4;
-        const objectType = (options.lastobj||{cmo:[0,0]}).cmo[1];
+        // const objectType = (options.lastobj||{cmo:[0,0]}).cmo[1];
+        const objectType = 25;
         let controlInfo;
         if(![0,5,7,11,12,14].includes(objectType)) {
             blob.l += 6;  // skip reserved4 (2 bytes) + reserved5 (4 bytes)
@@ -49,9 +50,9 @@ export function parseTxO(blob: CustomCFB$Blob, length: number, options?: any) {
 
         for(let i = 1; i < blob.continuePartDataLens.length - 1; ++i) {
             if(blob.l-position != blob.continuePartDataLens[i]) throw new Error("TxO: bad continue record");
-            var hdr = blob[blob.l];
-            var t = parseXLUnicodeStringNoCch(blob, blob.continuePartDataLens[i+1] - blob.continuePartDataLens[i]-1);
-            texts += t;
+            const hdr = blob[blob.l];
+            const text = parseXLUnicodeStringNoCch(blob, blob.continuePartDataLens[i+1] - blob.continuePartDataLens[i]-1);
+            texts += text;
             if(texts.length >= (hdr ? cchText : 2*cchText)) break;
         }
         if(texts.length !== cchText && texts.length !== cchText*2) {
@@ -66,9 +67,9 @@ export function parseTxO(blob: CustomCFB$Blob, length: number, options?: any) {
     //	if(cchText2 !== cchText) throw new Error("TxOLastRun mismatch: " + cchText2 + " " + cchText);
     //	blob.l += 6;
     //	if(position + length != blob.l) throw new Error("TxO " + (position + length) + ", at " + blob.l);
-        return { t: texts };
+        return { text: texts };
     } catch(e) { 
         blob.l = position + length; 
-        return { t: texts }; 
+        return { text: texts }; 
     }
 }

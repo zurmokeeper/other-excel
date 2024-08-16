@@ -119,3 +119,7 @@ export function parseRef8U(blob: CustomCFB$Blob, length: number) {
 export function parseUInt16(blob: CustomCFB$Blob, length?: number) { 
 	return blob.read_shift(2, 'u'); 
 }
+
+export function parseNoop(blob: CustomCFB$Blob, length: number) { 
+	blob.l += length; 
+}
