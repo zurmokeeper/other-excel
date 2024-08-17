@@ -1,11 +1,14 @@
 
-// import { parseShortXLUnicodeString } from '../parse';
 import { parseShortXLUnicodeString } from '../../../util/charsetParseUtil';
 import { getBit, getBitSlice} from '../../../util/index';
 import { CustomCFB$Blob } from '../../../util/type';
 
 /**
- * @desc size 20
+ * @desc [MS-XLS] 2.4.122 Font
+ * 
+ * size 20
+ * 
+ * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/291a910c-cb69-4799-875e-a201845d4fd1
  * @param blob 
  * @param length 
  * @returns 

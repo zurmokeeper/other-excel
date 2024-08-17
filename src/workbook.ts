@@ -4,6 +4,14 @@ import {SSTValueType} from './util/type';
 class WorkBook {
     sheetNames: Array<string>;
     date1904: boolean;
+    calcPrecision: boolean;
+    refreshAll: boolean;
+    // calcMode: number;
+    // calcCount: number;
+    // calcIter: boolean;
+    // calcDelta: number;
+    // calcSaveRecalc: boolean;
+    // calcRefMode: boolean;
     worksheet: Record<string, WorkSheet>;
     sst: SSTValueType;
     lastUserName: string;
@@ -17,6 +25,14 @@ class WorkBook {
     constructor() {
         this.sheetNames = [];
         this.date1904 = false;
+        this.calcPrecision = true;
+        this.refreshAll = false;
+        // this.calcMode = 1;
+        // this.calcCount = 100;
+        // this.calcIter = false;
+        // this.calcDelta = 0.001;
+        // this.calcSaveRecalc = true;
+        // this.calcRefMode = true;
         this.worksheet = {};
         this.sst = {
           strs: [],

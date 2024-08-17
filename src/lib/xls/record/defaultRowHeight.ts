@@ -1,7 +1,7 @@
 import { CustomCFB$Blob } from '../../../util/type';
 
 /**
- * @desc [MS-XLS] 2.4.87
+ * @desc [MS-XLS] 2.4.87 DefaultRowHeight
  * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/407c7fd6-d378-4901-8c79-432bfe38cef9
  * @returns 
  */

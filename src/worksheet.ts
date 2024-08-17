@@ -14,6 +14,13 @@ class WorkSheet {
     defaultColWidth: number;
     mergeCells: Array<Record<string, any>>;
 
+    calcMode: number;
+    calcCount: number;
+    calcIter: boolean;
+    calcDelta: number;
+    calcSaveRecalc: boolean;
+    calcRefMode: boolean;
+
     constructor(options: Options) {
         this.index = 0;
         this.name = options.name;
@@ -23,6 +30,13 @@ class WorkSheet {
         this.defaultRowHeight = 0;
         this.defaultColWidth = 0;
         this.mergeCells = [];
+
+        this.calcMode = 1;
+        this.calcCount = 100;
+        this.calcIter = false;
+        this.calcDelta = 0.001;
+        this.calcSaveRecalc = true;
+        this.calcRefMode = true;
     }
 
     getRow(){
@@ -34,7 +48,7 @@ class WorkSheet {
       console.log('xxxx', this.name)
       console.log('xxxx', this.labelSst)
     //   console.log('xxxx', this.dimensions)
-    //   console.log('rks', this.rks)
+      console.log('rks', this.rks)
       console.log('mergeCells', JSON.stringify(this.mergeCells))
     }
 

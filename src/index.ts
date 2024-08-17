@@ -1,13 +1,14 @@
 /**
- * @author Bruce
+ * @author zurmokeeper
  * @time 2024-03-16
  */
 import * as fs from 'fs';
 // import * as CFB from 'cfb';
 import XLSX from 'xlsx';
-// import { parseWorkbook } from './lib/xls/parse';
 import WorkBook from './workbook';
-import { Parse } from './lib/xls/parsev2';
+import { Parse } from './lib/xls/parse';
+
+const CFB = XLSX.CFB;
 
 type Options = {
   type?: 'base64' | 'buffer' | 'stream';
@@ -22,8 +23,6 @@ class Excel {
   }
 
   async read(data: string | Buffer | fs.ReadStream, options?: Options): Promise<WorkBook>{
-  // async read(data: string | Buffer | fs.ReadStream, options?: Options){
-  // async read(data: string | Buffer | fs.ReadStream, options?: Options): Promise<any> {
 
     let buffer;
     if (typeof data === 'string') {
@@ -52,10 +51,10 @@ class Excel {
         throw new Error('Unsupported data type');
     }
   
-    // const cfb = CFB.read(buffer, {type: 'buffer'});
-    // const Workbook = CFB.find(cfb, '/Workbook');
-    const cfb = XLSX.CFB.read(buffer, {type: 'buffer'});
-    const Workbook = XLSX.CFB.find(cfb, '/Workbook');
+    const cfb = CFB.read(buffer, {type: 'buffer'});
+    const Workbook = CFB.find(cfb, '/Workbook') || CFB.find(cfb, '/Book');
+    // const cfb = XLSX.CFB.read(buffer, {type: 'buffer'});
+    // const Workbook = XLSX.CFB.find(cfb, '/Workbook') || XLSX.CFB.find(cfb, '/Book');
     if(!Workbook) {
       throw new Error('Unsupported data type');
     }

@@ -3,7 +3,8 @@ import { parseXLUnicodeString2 } from '../../../util/charsetParseUtil';
 import { getBit, getBitSlice } from '../../../util/index';
 
 /**
- * @desc [MS-XLS] 2.4.107
+ * @desc [MS-XLS] 2.4.107 Note
+ * 
  * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/5d981e62-9e25-490a-9a75-b177373e2d79
  * @param blob 
  * @param length 

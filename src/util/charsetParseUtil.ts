@@ -123,3 +123,8 @@ export function parseUInt16(blob: CustomCFB$Blob, length?: number) {
 export function parseNoop(blob: CustomCFB$Blob, length: number) { 
 	blob.l += length; 
 }
+
+// export function parseXnum(blob: CustomCFB$Blob, length: number) { 
+// 	if(blob.length - blob.l < 8) throw "XLS Xnum Buffer underflow";
+// 	return blob.read_shift(8, 'f');
+// }

@@ -54,6 +54,11 @@ function parseBool(blob: CustomCFB$Blob, length: number) {
     return blob.read_shift(length) === 0x1; 
 }
 
+function parseXnum(blob: CustomCFB$Blob, length: number) { 
+	if(blob.length - blob.l < 8) throw "XLS Xnum Buffer underflow";
+	return blob.read_shift(8, 'f');
+}
+
 export {
     parseBoundSheet8,
     parseBOF,
@@ -81,5 +86,6 @@ export {
     parseObj,
     parseTxO,
     parseColInfo,
-    parseMulBlank
+    parseMulBlank,
+    parseXnum
 }

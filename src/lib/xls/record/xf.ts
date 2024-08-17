@@ -3,7 +3,10 @@ import { CustomCFB$Blob } from '../../../util/type';
 import { getBit, getBitSlice} from '../../../util/index';
 
 /**
- * @desc The XF record specifies formatting properties for a cell or a cell style.
+ * @desc [MS-XLS] 2.4.353 XF
+ * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/993d15c4-ec04-43e9-ba36-594dfb336c6d
+ * 
+ * The XF record specifies formatting properties for a cell or a cell style.
  * XF 记录指定单元格或单元格样式的格式属性。
  * 
  * 单元格 XF 由 XF 记录（第 2.4.353 节）（和可选的 XFExt 记录（第 2.4.355 节））指定，其中 XF 记录（第 2.4.353 节）的 fStyle 字段等于 0。
@@ -52,12 +55,13 @@ import { getBit, getBitSlice} from '../../../util/index';
  * 则此字段包含一个 StyleXF，用于指定单元格样式 XF 的其他属性。
  * 
  * 一个XF 是20个字节
+ * 
  * @param blob 
  * @param length 
  * @returns 
  */
 export function parseXF(blob: CustomCFB$Blob, length: number) {
-	const ifnt = blob.read_shift(2);
+	let ifnt = blob.read_shift(2);
     const ifmt = blob.read_shift(2);
 
     const buffer = blob.read_shift(2);
@@ -73,5 +77,6 @@ export function parseXF(blob: CustomCFB$Blob, length: number) {
     } else {  // 如果 fStyle 的值等于 1，则此字段包含一个 StyleXF  用于指定StyleXF样式 XF 的其他属性。
 
     }
+    if(ifnt > 4) ifnt = ifnt - 1;
     return { fontIndex: ifnt, ifmt, fLocked, fHidden, fStyle, f123Prefix, ixfParent}
 }

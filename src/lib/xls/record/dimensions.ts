@@ -1,19 +1,18 @@
 
 import { CustomCFB$Blob } from '../../../util/type';
 
-/* [MS-XLS] 2.4.90 */
 
-// TODO:左上的问题还有问题，要+1吗
 /**
- * @desc  Dimensions
+ * @desc  [MS-XLS] 2.4.90 Dimensions
+ * @link  https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/5fd3837c-9f3d-4952-8a85-ad93ddb37ced
  * @param blob 
  * @param length 
- * @param opts 
+ * @param options 
  * @returns 
  */
-export function parseDimensions(blob: CustomCFB$Blob, length: number, opts: any) {
+export function parseDimensions(blob: CustomCFB$Blob, length: number, options: any) {
 	const end = blob.l + length;
-	// const size = opts?.biff == 8 || !opts.biff ? 4 : 2;
+	// const size = options?.biff == 8 || !options.biff ? 4 : 2;
     const size = 4;
     // rwMic  // 包含单元格的第一行
     // rwMac 

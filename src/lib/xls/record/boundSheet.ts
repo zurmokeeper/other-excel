@@ -2,7 +2,7 @@ import { CustomCFB$Blob } from '../../../util/type';
 import { parseShortXLUnicodeString } from '../../../util/charsetParseUtil';
 
 /**
- * @desc [MS-XLS] 2.4.28
+ * @desc [MS-XLS] 2.4.28 BoundSheet8
  * BoundSheet8 [(0x8500)133 20]
  * lbPlyPos(4 byte) (A - hsState (2 bits) unused (6 bits))(1 byte)   dt (8 bits)(1 byte)  剩下14 byte 都是 stName
  * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/b9ec509a-235d-424e-871d-f8e721106501

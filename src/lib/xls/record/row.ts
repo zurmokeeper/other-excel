@@ -65,9 +65,15 @@ type DataType = {
     cnt: number;
 }
 
-/* [MS-XLS] 2.4.221 TODO: check BIFF2-4 */
-export function parseRow(blob: CustomCFB$Blob) {
-	const o: DataType = {
+/**
+ * @desc [MS-XLS] 2.4.221 Row
+ * 
+ * @link  https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/4aab09eb-49ed-4d01-a3b1-1d726247d3c2
+ * @param blob 
+ * @returns 
+ */
+export function parseRow(blob: CustomCFB$Blob, length: number) {
+	const output: DataType = {
         row: 0,
         colMic: 0,
         level: 0,
@@ -75,16 +81,16 @@ export function parseRow(blob: CustomCFB$Blob) {
         hpt: 0,
         cnt: 0
     };
-	o.row = blob.read_shift(2);
-	o.colMic = blob.read_shift(2);
-	o.cnt = blob.read_shift(2) - o.colMic;
+	output.row = blob.read_shift(2);
+	output.colMic = blob.read_shift(2);
+	output.cnt = blob.read_shift(2) - output.colMic;
 	const miyRw = blob.read_shift(2);
 	blob.l += 4; // reserved1(2), unused1(2)
 	const flags = blob.read_shift(1); // various flags
 	blob.l += 3; // reserved(8), ixfe(12), flags(4)
-	if(flags & 0x07) o.level = flags & 0x07;
+	if(flags & 0x07) output.level = flags & 0x07;
 	// collapsed: flags & 0x10
-	if(flags & 0x20) o.hidden = true;
-	if(flags & 0x40) o.hpt = miyRw / 20;
-	return o;
+	if(flags & 0x20) output.hidden = true;
+	if(flags & 0x40) output.hpt = miyRw / 20;
+	return output;
 }

@@ -1,29 +1,30 @@
 
-const ExcelJS = require('exceljs');
-let workbook = new ExcelJS.Workbook();
-workbook.xlsx.readFile('path/to/your/excel/file.xlsx')
-const worksheet = workbook.getWorksheet(1);
+// const ExcelJS = require('exceljs');
+// let workbook = new ExcelJS.Workbook();
+// workbook.xlsx.readFile('path/to/your/excel/file.xlsx')
+// const worksheet = workbook.getWorksheet(1);
 
-const buffer = Buffer.from('9e00000028002a001c00', 'hex')
-const num = buffer.readUInt32LE(0)   //158
-console.log('------>xx', num)
-const num2 = buffer.readUInt16LE(4)  //40
-console.log('------>xx', num2)
-
-
-const lbPlyPosbuffer = Buffer.from('ce3c0000', 'hex')
-const lbPlyPos = lbPlyPosbuffer.readUInt32LE(0)   
-console.log('------>xx', lbPlyPos)  // 15566
+// const buffer = Buffer.from('9e00000028002a001c00', 'hex')
+// const num = buffer.readUInt32LE(0)   //158
+// console.log('------>xx', num)
+// const num2 = buffer.readUInt16LE(4)  //40
+// console.log('------>xx', num2)
 
 
-const lbPlyPos2buffer = Buffer.from('923a0000', 'hex')
-const lbPlyPos2 = lbPlyPos2buffer.readUInt32LE(0)   
-console.log('------>xx', lbPlyPos2)  // 14994
+// const lbPlyPosbuffer = Buffer.from('ce3c0000', 'hex')
+// const lbPlyPos = lbPlyPosbuffer.readUInt32LE(0)   
+// console.log('------>xx', lbPlyPos)  // 15566
+
+
+// const lbPlyPos2buffer = Buffer.from('923a0000', 'hex')
+// const lbPlyPos2 = lbPlyPos2buffer.readUInt32LE(0)   
+// console.log('------>xx', lbPlyPos2)  // 14994
 
 const xlsx = require('xlsx');
 
     // xlsx.read()
-let workbook = xlsx.readFile("test1.xls")
+// let workbook = xlsx.readFile("test1.xls")
+let workbook = xlsx.readFile("test1-merge.xls")
 // console.log('------>workbook', workbook)  // 14994
 
 console.log('------>workbook', workbook.Workbook.Sheets)  // 14994

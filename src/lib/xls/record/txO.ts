@@ -33,7 +33,7 @@ export function parseTxO(blob: CustomCFB$Blob, length: number, options?: any) {
 	let texts = "";
     try {
         blob.l += 4;
-        // const objectType = (options.lastobj||{cmo:[0,0]}).cmo[1];
+        // const objectType = (options.lastobj||{cmo:[0,0]}).cmo[1]; TODO:
         const objectType = 25;
         let controlInfo;
         if(![0,5,7,11,12,14].includes(objectType)) {

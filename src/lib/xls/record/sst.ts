@@ -4,7 +4,10 @@ import { parseXLUnicodeRichExtendedString } from '../../../util/charsetParseUtil
 
 
 /**
- * @desc [MS-XLS] 2.4.265   Strings: [ { t: '阿萨德', raw: '<t>阿萨德</t>', r: '阿萨德' }, Count: 1, Unique: 1 ],
+ * @desc [MS-XLS] 2.4.265  SST  
+ * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/b6231b92-d32e-4626-badd-c3310a672bab
+ * 
+ * Strings: [ { t: '阿萨德', raw: '<t>阿萨德</t>', r: '阿萨德' }, Count: 1, Unique: 1 ],
  * 
  * SST 记录指定字符串常量 只有1个
  * sst -> shared string table(共享字符串表) 就是excel里字符不是每一个都是直接存，而同一个字符只存一次，其他通过引用的方法去关联，
@@ -18,9 +21,6 @@ import { parseXLUnicodeRichExtendedString } from '../../../util/charsetParseUtil
  */
 export function parseSST(blob: CustomCFB$Blob, length: number) {
 	const end = blob.l + length;
-	// var cnt = blob.read_shift(4);
-	// var ucnt = blob.read_shift(4);
-
 	const cstTotal = blob.read_shift(4);
 	const cstUnique = blob.read_shift(4);
 
@@ -28,13 +28,13 @@ export function parseSST(blob: CustomCFB$Blob, length: number) {
 	for(let i = 0; i != cstUnique && blob.l < end; ++i) {
 		strs.push(parseXLUnicodeRichExtendedString(blob));
 	}
-	const o = {
+	const output = {
 		strs: [],
 		count: 0, 
 		uniqueCount: 0
 	};
-	o.strs = strs; 
-	o.count = cstTotal; 
-	o.uniqueCount = cstUnique;
-	return o;
+	output.strs = strs; 
+	output.count = cstTotal; 
+	output.uniqueCount = cstUnique;
+	return output;
 }

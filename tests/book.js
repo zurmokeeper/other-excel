@@ -362,32 +362,35 @@ const recordNameNum = {
 
 async function test(){
     // const input = await fs.readFile(`./sample3.xls`);
-    const input = await fs.readFile(`./test1.xls`);
+    // const input = await fs.readFile(`./test1.xls`);
+    const input = await fs.readFile(`./test1-merge.xls`);
     const cfb = CFB.read(input, {type: 'buffer'});
     const Workbook = CFB.find(cfb, 'Workbook') || CFB.find(cfb, 'Book') ;
     let workbookContent = Workbook.content;
 
     const dataList = iterRecord(workbookContent);
 
-    await fs.writeFile(`./record-test1.json`, JSON.stringify(dataList));
+    // await fs.writeFile(`./record-test1.json`, JSON.stringify(dataList));
 
     let list = dataList.map((item)=>item.num);
     const num = reverse(recordNameNum);
-    const data = {};
-    list.forEach((item)=>{
-      data[item] = num[item]
-    })
+    // const data = {};
+    // list.forEach((item)=>{
+    //   data[item] = num[item]
+    // })
     
-    await fs.writeFile(`./record-data-uniq.json`, JSON.stringify(data));
+    // await fs.writeFile(`./record-data-uniq.json`, JSON.stringify(data));
 
     const arr = list.map((item)=>{
       return {num: item, value: num[item]}
     })
 
-    await fs.writeFile(`./record-list.json`, JSON.stringify(arr));
+    await fs.writeFile(`./record-list-merge.json`, JSON.stringify(arr));
 
-    list = _.sortBy(_.uniq(list)) 
-    console.log('list', list, list.length)
+    // await fs.writeFile(`./record-list.json`, JSON.stringify(arr));
+
+    // list = _.sortBy(_.uniq(list)) 
+    // console.log('list', list, list.length)
 
 
 
@@ -438,8 +441,8 @@ function reverse(data){
   return reversedData
 }
 
-// test()
-test2()
+test()
+// test2()
 
 function iterRecord(blob) {
     const dataList = [];

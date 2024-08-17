@@ -2,12 +2,15 @@
 import { CustomCFB$Blob } from '../../../util/type';
 
 /**
- * @desc labelSst LabelSst 记录指定一个包含字符串的单元格。用于指向sst的
+ * @desc [MS-XLS] 2.4.149 LabelSst
+ * LabelSst 记录指定一个包含字符串的单元格。用于指向sst的
  * 
  * SST常量总数cstTotal 有几个，这里就有几个 ，这个是出现在对应的sheet里的
  * 
  * 大小是10个字节
  * 前6个是 cell 后4个是 isst
+ * 
+ * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/3f52609d-816f-44a7-aad1-e0fe2abccebd
  * @param blob 
  * @param length 
  */
