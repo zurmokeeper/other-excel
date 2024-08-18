@@ -11,7 +11,7 @@ import { parseXLUnicodeString2 } from '../../../util/charsetParseUtil';
  */
 
 export function parseMergeCells(blob: CustomCFB$Blob, length: number, options?: any){
-	let merges = [];
+	const merges = [];
 	let cmcs = blob.read_shift(2);
     console.log('--------->cmcs-->parseMergeCells', cmcs)
 	while (cmcs--) {

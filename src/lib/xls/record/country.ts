@@ -11,7 +11,8 @@ import { CustomCFB$Blob } from '../../../util/type';
  * @returns 
  */
 export function parseCountry(blob: CustomCFB$Blob) {
-	let output: string[] = [], countryCode: number = 1;
+	const output: string[] = []; 
+	let countryCode = 1;
 	countryCode = blob.read_shift(2); // iCountryDef
 	output[0] = CountryCodeEnum[countryCode];
 	countryCode = blob.read_shift(2);  // iCountryWinIni

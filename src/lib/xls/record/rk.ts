@@ -31,7 +31,7 @@ function parseRkNumber(blob: CustomCFB$Blob, length?: number){
     const fInt = getBit(buffer, 1);
     let RK;
     if(fInt === 0 ) {
-        let bufferData = Buffer.from([0, 0, 0, 0, (data[0] & 0xFC), data[1], data[2], data[3]]);
+        const bufferData = Buffer.from([0, 0, 0, 0, (data[0] & 0xFC), data[1], data[2], data[3]]);
         RK = bufferData.readDoubleLE(0);
     } else {  // 1
         RK = getBitSlice(buffer, 2, 32)
