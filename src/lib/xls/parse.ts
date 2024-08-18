@@ -9,6 +9,7 @@ import {parseBoundSheet8, parseBOF, parseSST, parseLabelSST, parseCountry,
     parseXnum
 } from './record/entry';
 import WorkBook from '../../workbook';
+import {buildCell} from '../../util/index';
 
 const CFB = XLSX.CFB
 
@@ -184,6 +185,8 @@ export class Parse {
         const currWorksheet: Record<number, any> = {};
         let currSheetName;
         let currWorksheetInst;
+        let tempCell;
+        let sheetIndex = -1;
     
         while (blob.l < blob.length - 1) {
             const position = blob.l;   // 每个record 第一个数据的偏移量
@@ -217,37 +220,31 @@ export class Parse {
                         this.workbook.refreshAll = value;
                         break;
                     case XLSRECORDNAME.CalcMode:
-                        // this.workbook.calcMode = value;
                         if(currWorksheetInst) {
                             currWorksheetInst.calcMode = value;
                         }
                         break;
                     case XLSRECORDNAME.CalcCount:
-                        // this.workbook.calcCount = value;
                         if(currWorksheetInst) {
                             currWorksheetInst.calcCount = value;
                         }
                         break;
                     case XLSRECORDNAME.CalcIter:
-                        // this.workbook.calcIter = value;
                         if(currWorksheetInst) {
                             currWorksheetInst.calcIter = value;
                         }
                         break;
                     case XLSRECORDNAME.CalcDelta:
-                        // this.workbook.calcDelta = value;
                         if(currWorksheetInst) {
                             currWorksheetInst.calcDelta = value;
                         }
                         break;
                     case XLSRECORDNAME.CalcSaveRecalc:
-                        // this.workbook.calcSaveRecalc = value;
                         if(currWorksheetInst) {
                             currWorksheetInst.calcSaveRecalc = value;
                         }
                         break;
                     case XLSRECORDNAME.CalcRefMode:
-                        // this.workbook.calcRefMode = value;
                         if(currWorksheetInst) {
                             currWorksheetInst.calcRefMode = value;
                         }
@@ -257,21 +254,17 @@ export class Parse {
                         this.workbook.lastUserName = value;
                         break;
                     case XLSRECORDNAME.RRTabId:
-                        console.log('rrtabid-->', value)
-                        // this.workbook.rrtabid = value;
+                        this.workbook.rrTabid = value;
                         break;
                     case XLSRECORDNAME.Protect:
-                        console.log('Protect-->', value)
                         this.workbook.protect = value;
                         break;
                     case XLSRECORDNAME.Password:
-                        console.log('Password-->', value)
                         this.workbook.password = value;
                         break;
                     case XLSRECORDNAME.WinProtect:
-                            console.log('WinProtect-->', value)
-                            this.workbook.winProtect = value;
-                            break;
+                        this.workbook.winProtect = value;
+                        break;
                     case XLSRECORDNAME.BoundSheet8:
                         currWorksheet[value.pos] = value;
                         this.workbook.sheetNames.push(value.sheetName)
@@ -282,8 +275,11 @@ export class Parse {
                         // TODO: 处理当前wordsheet 的内容
     
                         currSheetName = currWorksheet[position].sheetName;
-                        
+                         
                         currWorksheetInst = this.workbook.setWorksheet({sheetName: currSheetName})
+                        sheetIndex++;
+                        currWorksheetInst.index = sheetIndex;
+                        currWorksheetInst.actualRowCount = 0;
 
                         merges = [];
     
@@ -293,6 +289,9 @@ export class Parse {
                         value.xf = this.workbook.xfs[value.ixfe];
 
                         currWorksheetInst?.labelSsts.push(value)
+
+                        tempCell = buildCell({col: value.col, row: value.row, type: value.type, text: value.value.t})
+                        currWorksheetInst?.cells.push(tempCell)
                         break;
                     // case XLSRECORDNAME.DefaultRowHeight:
                     //     if(currWorksheetInst) {
@@ -300,7 +299,6 @@ export class Parse {
                     //     }
                     //     break;
                     case XLSRECORDNAME.DefColWidth:
-                        console.log('DefColWidth-->', value)
                         if(currWorksheetInst) {
                             currWorksheetInst.defaultColWidth = value;
                         }
@@ -309,7 +307,6 @@ export class Parse {
                         currWorksheetInst?.mergeCells.push(value)
                         break;
                     case XLSRECORDNAME.SST:
-
                         this.workbook.sst = value
                         break;
                     case XLSRECORDNAME.XF:
@@ -330,7 +327,9 @@ export class Parse {
                         break;
                     case XLSRECORDNAME.Row:
                         console.log('Row-->', JSON.stringify(value) )
-                        // this.workbook.sst = value
+                        if(currWorksheetInst) {
+                            currWorksheetInst.actualRowCount++;
+                        }
                         break;
                     case XLSRECORDNAME.ColInfo:
                         console.log('ColInfo-->', JSON.stringify(value) )
@@ -352,12 +351,12 @@ export class Parse {
                         this.workbook.formats.push(value);
                         break;
                     case XLSRECORDNAME.Dimensions:
-
-                        currWorksheetInst?.dimensions.push(value)
+                        if(currWorksheetInst) {
+                            currWorksheetInst.dimensions = value;
+                        }
                         break;
                     case XLSRECORDNAME.Country:
-                        console.log('Country-->', value)
-                        // currWorksheetInst?.dimensions.push(value)
+                        this.workbook.country = value;
                         break; 
                     case XLSRECORDNAME.DBCell:
                         console.log('DBCell-->', value)
@@ -371,7 +370,10 @@ export class Parse {
                     case XLSRECORDNAME.RK:
 
                         value.xf = this.workbook.xfs[value.ixfe];
+                        tempCell = buildCell({col: value.col, row: value.row, type: value.type, text: value.rknum})
+                        
                         currWorksheetInst?.rks.push(value)
+                        currWorksheetInst?.cells.push(tempCell)
                         break;
                     case XLSRECORDNAME.EOF:
                         if(--file_depth) break; // 出栈，第一对 BOF EOF 读完了

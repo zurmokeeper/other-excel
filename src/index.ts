@@ -59,7 +59,6 @@ class Excel {
       throw new Error('Unsupported data type');
     }
   
- 
     const parse = new Parse(this.workbook)
     parse.parse(Workbook.content, options)
   

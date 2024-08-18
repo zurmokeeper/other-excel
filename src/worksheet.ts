@@ -2,34 +2,23 @@ import orderBy from 'lodash/orderBy';
 import {decodeCell} from './util/index';
 import {getRowsSchema} from './util/schema';
 import {MAX_ROW_NUM, MAX_COL_NUM} from './util/enum';
+import {Cell, Row, Column, Range} from './util/type';
 
 
 type Options = {
     name: string | number;
 }
 
-interface Cell {
-  value: string;
-  type: 'string' | 'date' | 'hyperlink' | 'number';
-  col: number;
-  row: number;
-  text: string | number; // 单元格字面量
-}
-
-interface Row {
-  readonly number: number;
-  values: Cell[];
-}
-
 class WorkSheet {
     index: number;
     name: string | number;
     labelSsts: Array<Record<string, any>>;
-    dimensions: Array<Record<string, any>>;
+    dimensions: Range;
     rks: Array<Record<string, any>>;
     defaultRowHeight: number;
     defaultColWidth: number;
     mergeCells: Array<Record<string, any>>;
+    cells: Cell[];
 
     calcMode: number;
     calcCount: number;
@@ -38,18 +27,19 @@ class WorkSheet {
     calcSaveRecalc: boolean;
     calcRefMode: boolean;
 
-    readonly actualRowCount: number;
-    readonly actualColumnCount: number;
+    actualRowCount: number;
+    actualColumnCount: number;
 
     constructor(options: Options) {
         this.index = 0;
         this.name = options.name;
         this.labelSsts = [];
-        this.dimensions = [];
+        this.dimensions = {start: {row:0, col: 0}, end: {row:0, col: 0}};
         this.rks = [];
         this.defaultRowHeight = 0;
         this.defaultColWidth = 0;
         this.mergeCells = [];
+        this.cells = [];
 
         this.calcMode = 1;
         this.calcCount = 100;
@@ -70,16 +60,14 @@ class WorkSheet {
         throw new Error(`index must be less than or equal to ${MAX_ROW_NUM}.`);
       }
       let row: Row = {number: index, values: []};
-      // 加一个 非整数的判断  TODO:  加一个最大行的判断
-      const cellList = this.labelSsts.concat(this.rks);
-      if(cellList.length === 0) return row;
-      const filterCellList = cellList.filter((item)=>item.row === index);
+      if(this.cells.length === 0) return row;
+      const filterCellList = this.cells.filter((item)=>item.row === index);
       const sortCellList = orderBy(filterCellList, 'col', 'asc');
-      // row = {number: index, values: sortCellList}
+      row = {number: index, values: sortCellList}
       return row;
     }
 
-    getRows(start: number, end: number){
+    getRows(start: number, end: number): Row[] {
       // if(start < 0 || end < 0) {
       //   throw new Error('start or end must be greater than or equal to 0.');
       // }
@@ -92,17 +80,19 @@ class WorkSheet {
 
       getRowsSchema.parse({start, end})
 
-      const cellList = this.labelSsts.concat(this.rks);
-      if(cellList.length === 0) return [];
-      const filterCellList = cellList.filter((item)=>item.row >= start && item.row <= end);
+      if(this.cells.length === 0) return [];
+      const filterCellList = this.cells.filter((item)=>item.row >= start && item.row <= end);
 
       const rangeCellList = [];
       while (start < end) {
-        const indexCellList = []
+        // const indexCellList = []
+        const indexCellList: Row = {number: start, values: []}
         for (const cell of filterCellList) {
-          if(cell.row === start) indexCellList.push(cell)
+          // if(cell.row === start) indexCellList.push(cell)
+            if(cell.row === start) indexCellList.values.push(cell)
         }
-        if(indexCellList.length > 0) {
+        // if(indexCellList.length > 0) {
+        if(indexCellList.values.length > 0) {
           rangeCellList.push(indexCellList)
         }
         start++;
@@ -110,7 +100,7 @@ class WorkSheet {
       return rangeCellList;
     }
 
-    getColumn(index: number | string){
+    getColumn(index: number | string): Column {
       if(typeof index === 'string') {
         const cell = decodeCell(index);
         index = cell.col;
@@ -121,25 +111,46 @@ class WorkSheet {
       if(index > MAX_COL_NUM) {
         throw new Error('index 必须大于等于0');
       }
-      // 加一个 非整数的判断
-      const cellList = this.labelSsts.concat(this.rks);
-      if(cellList.length === 0) return [];
-      const filterCellList = cellList.filter((item)=>item.col === index);
+      let col: Column = {number: index, values: []};
+      if(this.cells.length === 0) return col;
+      const filterCellList = this.cells.filter((item)=>item.col === index);
       const sortCellList = orderBy(filterCellList, 'col', 'asc')
-      return sortCellList;
+      col = {number: index, values: sortCellList}
+      return col;
     }
 
-    getColumns(start: number, end: number){
+    getColumns(start: number, end: number): Column[] {
+
+      getRowsSchema.parse({start, end})
+
+
+      if(this.cells.length === 0) return [];
+      const filterCellList = this.cells.filter((item)=>item.col >= start && item.col <= end);
+
+      const rangeCellList = [];
+      while (start < end) {
+        const indexCellList: Column = {number: start, values: []}
+        for (const cell of filterCellList) {
+            if(cell.row === start) indexCellList.values.push(cell)
+        }
+        if(indexCellList.values.length > 0) {
+          rangeCellList.push(indexCellList)
+        }
+        start++;
+      }
+      return rangeCellList;
     }
 
     // cell 挂多个 address ->A1
     // getCell(1,1) or getCell(A1)
-    getCell(row: number | string, col?: number){
+    getCell(row: number | string, col?: number): Cell | undefined {
       console.log('xxxx', this.name)
       console.log('xxxx', this.labelSsts)
     //   console.log('xxxx', this.dimensions)
       console.log('rks', this.rks)
       console.log('mergeCells', JSON.stringify(this.mergeCells))
+
+      console.log('cells', this.cells)
 
       let realRow = row, realCol = 0;
       if(typeof row === 'string') {
@@ -160,9 +171,8 @@ class WorkSheet {
         throw new Error('index 必须大于等于0');
       }
 
-      const cellList = this.labelSsts.concat(this.rks);
-      if(cellList.length === 0) return ;
-      const cell = cellList.find((item)=>item.col === realCol && item.row === realRow);
+      if(this.cells.length === 0) return ;
+      const cell = this.cells.find((item)=>item.col === realCol && item.row === realRow);
       return cell;
     }
 

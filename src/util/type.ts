@@ -27,3 +27,29 @@ export interface Cell {
     row: number;
     text: string | number; // 单元格字面量
 }
+
+export interface Row {
+    readonly number: number;
+    values: Cell[];
+}
+
+export interface Column {
+    readonly number: number;
+    values: Cell[];
+}
+
+export interface Column {
+    readonly number: number;
+    values: Cell[];
+}
+
+export interface Range {
+    start: {
+        col: number;
+        row: number;
+    }
+    end: {
+        col: number;
+        row: number;
+    }
+}

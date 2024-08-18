@@ -6,12 +6,6 @@ class WorkBook {
     date1904: boolean;
     calcPrecision: boolean;
     refreshAll: boolean;
-    // calcMode: number;
-    // calcCount: number;
-    // calcIter: boolean;
-    // calcDelta: number;
-    // calcSaveRecalc: boolean;
-    // calcRefMode: boolean;
     worksheet: Record<string, WorkSheet>;
     sst: SSTValueType;
     lastUserName: string;
@@ -21,18 +15,14 @@ class WorkBook {
     xfs: Array<Record<string, any>>;
     fonts: Array<Record<string, any>>;
     formats: Array<Record<string, any>>;
+    rrTabid: number[];
+    country: string[];
 
     constructor() {
         this.sheetNames = [];
         this.date1904 = false;
         this.calcPrecision = true;
         this.refreshAll = false;
-        // this.calcMode = 1;
-        // this.calcCount = 100;
-        // this.calcIter = false;
-        // this.calcDelta = 0.001;
-        // this.calcSaveRecalc = true;
-        // this.calcRefMode = true;
         this.worksheet = {};
         this.sst = {
           strs: [],
@@ -46,12 +36,9 @@ class WorkBook {
         this.xfs = [];
         this.fonts = [];
         this.formats = [];
+        this.rrTabid = [];
+        this.country = [];
     }
-
-      // 注册工作表的构造函数
-    // registerWorkSheet(name: string, ctor: new (options: Options) => WorkSheet) {
-    //     this.worksheet[name] = ctor;
-    // }
 
     getWorksheet(id: number | string) {
         // if (!this.workbook) {
