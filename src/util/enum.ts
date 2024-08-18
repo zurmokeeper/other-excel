@@ -55,3 +55,6 @@ export const CountryCodeEnum: { [key: number]: string } = {
     0x03D5: "IR", // Iran
     0xFFFF: "US"  // United States
 };
+
+export const MAX_ROW_NUM = 65536; 
+export const MAX_COL_NUM = 256;

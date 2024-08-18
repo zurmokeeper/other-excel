@@ -14,7 +14,7 @@ export function parseRK(blob: CustomCFB$Blob, length: number){
 	const rw = blob.read_shift(2);
     const col = blob.read_shift(2);
 	const rkrec = parseRkRec(blob);
-	return {row:rw, col:col, ixfe:rkrec[0], rknum:rkrec[1]};
+	return {row:rw, col:col, ixfe:rkrec[0], rknum:rkrec[1], type: 'number'};
 }
 
 function parseRkRec(blob: CustomCFB$Blob, length?: number){

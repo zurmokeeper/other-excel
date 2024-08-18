@@ -19,5 +19,5 @@ function parseCell(blob: CustomCFB$Blob){
     const rw = blob.read_shift(2);
 	const col = blob.read_shift(2);
     const ixfe = blob.read_shift(2);
-    return {row: rw, col: col, indexOfXFCell: ixfe}
+    return {row: rw, col: col, ixfe: ixfe}
 }

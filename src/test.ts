@@ -1,5 +1,6 @@
 import OtherExcel from './index';
 // import _ from 'lodash';
+import { z } from 'zod';
 
 
 async function name() {
@@ -19,14 +20,47 @@ async function name() {
 
     // workbook1.setWorksheet()
     const worksheet = workbook1.getWorksheet(0)
-    worksheet.getCell()
+    const cell = worksheet.getCell('A3')
+    console.log('cell', cell)
 
     const worksheet1 = workbook1.getWorksheet(1)
-    worksheet1.getCell()
+    // worksheet1.getCell()
 
+    // const row = worksheet.getRow(3)
+    // console.log('row', row)
+
+    const rows = worksheet.getRows(-2, 4)
+    console.log('rows', rows)
+
+    // const col = worksheet.getColumn(0)
+    // console.log('row', col)
 }
 
 name()
 
 // DBCell--> { dbRtrw: 158 }
 // DBCell--> { dbRtrw: 136 }
+
+const MAX_COL_NUM = 100; // 替换为实际的最大列数
+
+// 定义一个 Zod 模式来验证 start 和 end 参数
+const getRowsSchema = z.object({
+  start: z.number()
+  .nonnegative({message: 'start must be greater than or equal to 0.'})
+  .int({message: 'start must be an integer.'}),
+  end: z.number().nonnegative().int(),
+}).refine(data => data.start < data.end, {
+  message: 'start must be less than end.',
+}).refine(data => data.end <= MAX_COL_NUM, {
+  message: `end must be less than or equal to ${MAX_COL_NUM}.`,
+});
+
+function getRows(start: number, end: number) {
+  // 使用 Zod 验证参数
+  getRowsSchema.parse({ start, end });
+
+  // 参数验证通过，继续执行函数逻辑
+  console.log(`Fetching rows from ${start} to ${end}`);
+}
+
+// getRows(1, 1000)

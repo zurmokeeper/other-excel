@@ -73,22 +73,6 @@ class Excel {
     return this.workbook.sheetNames;
   }
 
-  getWorksheet(id: number | string) {
-    if (!this.workbook) {
-        throw new Error('Workbook is not loaded. Call read() first.');
-    }
-
-    if( typeof id === 'number') {
-      const sheetName = this.workbook.sheetNames[id];
-      if (!sheetName) {
-        throw new Error(`Worksheet at index ${id} not found.`);
-      }
-      return this.workbook.worksheet[sheetName];
-    }
-
-    return this.workbook.worksheet[id];
-  }
-
   getColumnCount(){
 
   }
@@ -169,3 +153,5 @@ export default Excel;
 //   worksheets: Worksheet[];
 //   getWorksheet(indexOrName?: number | string): Worksheet | undefined;
 // }
+
+// ixfe-> indexOfXFCell

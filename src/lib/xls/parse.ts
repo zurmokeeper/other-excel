@@ -290,9 +290,9 @@ export class Parse {
                         break;
                     case XLSRECORDNAME.LabelSST:
                         value.value = this.workbook.sst.strs[value.isst]
-                        value.xf = this.workbook.xfs[value.cell.indexOfXFCell];
+                        value.xf = this.workbook.xfs[value.ixfe];
 
-                        currWorksheetInst?.labelSst.push(value)
+                        currWorksheetInst?.labelSsts.push(value)
                         break;
                     // case XLSRECORDNAME.DefaultRowHeight:
                     //     if(currWorksheetInst) {
