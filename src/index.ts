@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import XLSX from 'xlsx';
 import WorkBook from './workbook';
 import { Parse } from './lib/xls/parse';
+// import { CustomCFB$Blob } from './util/type';
 
 const CFB = XLSX.CFB;
 
@@ -60,8 +61,9 @@ class Excel {
     }
   
     const parse = new Parse(this.workbook)
+    // parse.parse(Workbook.content as CustomCFB$Blob, options)
     parse.parse(Workbook.content, options)
-  
+
     return this.workbook;
   }
 
@@ -71,42 +73,9 @@ class Excel {
     }
     return this.workbook.sheetNames;
   }
-
-  getColumnCount(){
-
-  }
-
-  getRowCount(){
-    
-  }
-
-  getDimensions(){
-    
-  }
 }
 
 export default Excel;
-
-
-
-// function decode_cell(cstr) {
-// 	var R = 0, C = 0;
-// 	for(var i = 0; i < cstr.length; ++i) {
-// 		var cc = cstr.charCodeAt(i);
-// 		if(cc >= 48 && cc <= 57) R = 10 * R + (cc - 48);
-// 		else if(cc >= 65 && cc <= 90) C = 26 * C + (cc - 64);
-// 	}
-// 	return { c: C - 1, r:R - 1 };
-// }
-
-// // 把 {row: 1, cole: 1} 变成 B2
-// //function encode_cell(cell) { return encode_col(cell.c) + encode_row(cell.r); }
-// function encode_cell(cell) {
-// 	var col = cell.c + 1;
-// 	var s="";
-// 	for(; col; col=((col-1)/26)|0) s = String.fromCharCode(((col-1)%26) + 65) + s;
-// 	return s + (cell.r + 1);
-// }
 
 // export interface Worksheet {
 //   readonly id: number;
@@ -123,16 +92,6 @@ export default Excel;
 //   getRow(index: number): Row;
 //   getRows(start: number, length: number): Row[] | undefined;
 //   getCell(r: number | string, c?: number | string): Cell;
-// }
-
-// export interface Row {
-//   readonly number: number;
-//   values: CellValue[];
-// }
-
-// export interface Column {
-//   readonly number: number;
-//   values: CellValue[];
 // }
 
 // export class Workbook {

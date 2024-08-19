@@ -1,6 +1,13 @@
 
+
 type XLSXCFB$Blob = number[] | Uint8Array | Buffer
 export type CustomCFB$Blob = XLSXCFB$Blob & {l: number, read_shift(num: number, encoding?: string): any, continuePartDataLens: number[]}
+// export type CustomCFB$Blob = XLSXCFB$Blob & {
+//     l: number, 
+//     read_shift(num: number, encoding?: string): number | string, 
+//     continuePartDataLens: number[]
+// }
+
 
 export type CellValueType = 'string' | 'date' | 'hyperlink' | 'number';
 

@@ -15,7 +15,7 @@ export function decodeCell(str: string) {
             col = 26 * col + (code - 64);
         }
 	}
-    if(row < 0 || col < 0) throw new Error('str 格式异常，请输入正确的格式')
+    if(row < 0 || col < 0) throw new Error('参数格式异常，请输入正确的格式');
 	return { col: col - 1, row: row - 1 };
 }
 

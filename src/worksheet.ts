@@ -85,13 +85,10 @@ class WorkSheet {
 
       const rangeCellList = [];
       while (start < end) {
-        // const indexCellList = []
         const indexCellList: Row = {number: start, values: []}
         for (const cell of filterCellList) {
-          // if(cell.row === start) indexCellList.push(cell)
             if(cell.row === start) indexCellList.values.push(cell)
         }
-        // if(indexCellList.length > 0) {
         if(indexCellList.values.length > 0) {
           rangeCellList.push(indexCellList)
         }

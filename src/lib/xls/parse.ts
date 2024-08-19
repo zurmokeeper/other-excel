@@ -14,7 +14,7 @@ import {buildCell} from '../../util/index';
 const CFB = XLSX.CFB
 
 interface XLSRecord {
-	func?: (blob: CustomCFB$Blob, length: number, options?: any) => any;
+	func?: (blob: CustomCFB$Blob, length: number, options?: Record<string, any>) => any;
     name: string;
 }
 
@@ -123,17 +123,16 @@ const BOFList = [0x0009, 0x0209, 0x0409, 0x0809];
 const CONTINUERT = [ 0x003c, 0x043c, 0x0812, 0x0875, 0x087f ];
 
 // blob.l 是正式内容的偏移量开头了，已经读了 num 和 size 了
-function slurp(blob: any, length: number, record: XLSRecord){
+function slurp(blob: CustomCFB$Blob, length: number, record: XLSRecord){
 	const data = blob.slice(blob.l, blob.l + length);
 	blob.l += length;
-	// CFB.utils.prep_blob(data, 0);
-	if(!record || !record.func) {  // TODO: 想想这些没有func的要怎么处理
+	if(!record || !record.func) {
 		return {};
 	}
     const buf = [];
     buf.push(data)
 
-    let nextRecordType = blob.readUInt16LE(blob.l);
+    let nextRecordType = (blob as Buffer).readUInt16LE(blob.l);
     let nextFunc = XLSRECORDENUM[nextRecordType];
     while(nextFunc != null && CONTINUERT.includes(nextRecordType)) {
 
@@ -149,9 +148,9 @@ function slurp(blob: any, length: number, record: XLSRecord){
         blob.l += continueSize;
 
 		buf.push(continueData);
-		nextFunc = XLSRECORDENUM[nextRecordType = blob.readUInt16LE(blob.l)];
+		nextFunc = XLSRECORDENUM[nextRecordType = (blob as Buffer).readUInt16LE(blob.l)];
 	}
-    const totalData = Buffer.concat(buf) as CustomCFB$Blob;
+    const totalData = Buffer.concat((buf as Buffer[])) as CustomCFB$Blob;
     CFB.utils.prep_blob(totalData, 0);
 
     let len = 0;  //  continue 前一个记录的数据部分长度
@@ -178,7 +177,8 @@ export class Parse {
         this.workbook = workbook;
     }
 
-    parse(blob: any, options?: any){
+    // parse(blob: any, options?: any){
+    parse(blob: CustomCFB$Blob, options?: any){
 
         let file_depth = 0;
         let merges = [];
@@ -190,8 +190,8 @@ export class Parse {
     
         while (blob.l < blob.length - 1) {
             const position = blob.l;   // 每个record 第一个数据的偏移量
-            const recordType = blob.read_shift(2);
-            const size = blob.read_shift(2);
+            const recordType = blob.read_shift(2) as number;
+            const size = blob.read_shift(2) as number;
             const record = XLSRECORDENUM[recordType];
             const recordName = record?.name;
             let value;
@@ -210,6 +210,22 @@ export class Parse {
     
             if(record?.func) {
                 switch (recordName) {
+                    case XLSRECORDNAME.WriteAccess:
+                        console.log('lastUserName-->', value)
+                        this.workbook.lastUserName = value;
+                        break;
+                    case XLSRECORDNAME.RRTabId:
+                        this.workbook.rrTabid = value;
+                        break;
+                    case XLSRECORDNAME.WinProtect:
+                        this.workbook.winProtect = value;
+                        break;
+                    case XLSRECORDNAME.Protect:
+                        this.workbook.protect = value;
+                        break;
+                    case XLSRECORDNAME.Password:
+                        this.workbook.password = value;
+                        break;
                     case XLSRECORDNAME.Date1904:
                         this.workbook.date1904 = value;
                         break;
@@ -219,6 +235,47 @@ export class Parse {
                     case XLSRECORDNAME.RefreshAll:
                         this.workbook.refreshAll = value;
                         break;
+                    case XLSRECORDNAME.Font:
+                        // console.log('XF-->', value)
+                        this.workbook.fonts.push(value)
+                        break;
+                    case XLSRECORDNAME.Format:
+                        // console.log('Format-->', value)
+                        this.workbook.formats.push(value);
+                        break;
+                    case XLSRECORDNAME.XF:
+                        // console.log('XF-->', value)
+                        this.workbook.xfs.push(value)
+                        break;
+                    case XLSRECORDNAME.BoundSheet8:
+                        currWorksheet[value.pos] = value;
+                        this.workbook.sheetNames.push(value.sheetName)
+                        break;
+                    case XLSRECORDNAME.Country:
+                        this.workbook.country = value;
+                        break; 
+                    case XLSRECORDNAME.SST:
+                        this.workbook.sst = value
+                        break;
+                    case XLSRECORDNAME.ExtSST:
+                        console.log('ExtSST-->', value)
+                        // this.workbook.sst = value
+                        break;
+                    case XLSRECORDNAME.BOF:
+                        file_depth++;
+                        if(file_depth) break;
+                        // TODO: 处理当前wordsheet 的内容
+    
+                        currSheetName = currWorksheet[position].sheetName;
+                            
+                        currWorksheetInst = this.workbook.setWorksheet({sheetName: currSheetName})
+                        sheetIndex++;
+                        currWorksheetInst.index = sheetIndex;
+                        currWorksheetInst.actualRowCount = 0;
+
+                        merges = [];
+    
+                        break;
                     case XLSRECORDNAME.CalcMode:
                         if(currWorksheetInst) {
                             currWorksheetInst.calcMode = value;
@@ -227,6 +284,11 @@ export class Parse {
                     case XLSRECORDNAME.CalcCount:
                         if(currWorksheetInst) {
                             currWorksheetInst.calcCount = value;
+                        }
+                        break;
+                    case XLSRECORDNAME.CalcRefMode:
+                        if(currWorksheetInst) {
+                            currWorksheetInst.calcRefMode = value;
                         }
                         break;
                     case XLSRECORDNAME.CalcIter:
@@ -244,55 +306,6 @@ export class Parse {
                             currWorksheetInst.calcSaveRecalc = value;
                         }
                         break;
-                    case XLSRECORDNAME.CalcRefMode:
-                        if(currWorksheetInst) {
-                            currWorksheetInst.calcRefMode = value;
-                        }
-                        break;
-                    case XLSRECORDNAME.WriteAccess:
-                        console.log('lastUserName-->', value)
-                        this.workbook.lastUserName = value;
-                        break;
-                    case XLSRECORDNAME.RRTabId:
-                        this.workbook.rrTabid = value;
-                        break;
-                    case XLSRECORDNAME.Protect:
-                        this.workbook.protect = value;
-                        break;
-                    case XLSRECORDNAME.Password:
-                        this.workbook.password = value;
-                        break;
-                    case XLSRECORDNAME.WinProtect:
-                        this.workbook.winProtect = value;
-                        break;
-                    case XLSRECORDNAME.BoundSheet8:
-                        currWorksheet[value.pos] = value;
-                        this.workbook.sheetNames.push(value.sheetName)
-                        break;
-                    case XLSRECORDNAME.BOF:
-                        file_depth++;
-                        if(file_depth) break;
-                        // TODO: 处理当前wordsheet 的内容
-    
-                        currSheetName = currWorksheet[position].sheetName;
-                         
-                        currWorksheetInst = this.workbook.setWorksheet({sheetName: currSheetName})
-                        sheetIndex++;
-                        currWorksheetInst.index = sheetIndex;
-                        currWorksheetInst.actualRowCount = 0;
-
-                        merges = [];
-    
-                        break;
-                    case XLSRECORDNAME.LabelSST:
-                        value.value = this.workbook.sst.strs[value.isst]
-                        value.xf = this.workbook.xfs[value.ixfe];
-
-                        currWorksheetInst?.labelSsts.push(value)
-
-                        tempCell = buildCell({col: value.col, row: value.row, type: value.type, text: value.value.t})
-                        currWorksheetInst?.cells.push(tempCell)
-                        break;
                     // case XLSRECORDNAME.DefaultRowHeight:
                     //     if(currWorksheetInst) {
                     //         currWorksheetInst.defaultRowHeight = value;
@@ -303,27 +316,14 @@ export class Parse {
                             currWorksheetInst.defaultColWidth = value;
                         }
                         break;
-                    case XLSRECORDNAME.MergeCells:
-                        currWorksheetInst?.mergeCells.push(value)
-                        break;
-                    case XLSRECORDNAME.SST:
-                        this.workbook.sst = value
-                        break;
-                    case XLSRECORDNAME.XF:
-                        // console.log('XF-->', value)
-                        this.workbook.xfs.push(value)
-                        break;
-                    case XLSRECORDNAME.Font:
-                        // console.log('XF-->', value)
-                        this.workbook.fonts.push(value)
-                        break;
-                    case XLSRECORDNAME.ExtSST:
-                        console.log('ExtSST-->', value)
+                    case XLSRECORDNAME.ColInfo:
+                        console.log('ColInfo-->', JSON.stringify(value) )
                         // this.workbook.sst = value
                         break;
-                    case XLSRECORDNAME.Blank:
-                        console.log('Blank-->', value)
-                        // this.workbook.sst = value
+                    case XLSRECORDNAME.Dimensions:
+                        if(currWorksheetInst) {
+                            currWorksheetInst.dimensions = value;
+                        }
                         break;
                     case XLSRECORDNAME.Row:
                         console.log('Row-->', JSON.stringify(value) )
@@ -331,42 +331,15 @@ export class Parse {
                             currWorksheetInst.actualRowCount++;
                         }
                         break;
-                    case XLSRECORDNAME.ColInfo:
-                        console.log('ColInfo-->', JSON.stringify(value) )
-                        // this.workbook.sst = value
+                    case XLSRECORDNAME.LabelSST:
+                        value.value = this.workbook.sst.strs[value.isst]
+                        value.xf = this.workbook.xfs[value.ixfe];
+
+                        currWorksheetInst?.labelSsts.push(value)
+
+                        tempCell = buildCell({col: value.col, row: value.row, type: value.type, text: value.value.t})
+                        currWorksheetInst?.cells.push(tempCell)
                         break;
-                    case XLSRECORDNAME.HLink:
-                        console.log('HLink-->', JSON.stringify(value) )
-                        // this.workbook.sst = value
-                        break;
-                    case XLSRECORDNAME.Note:
-                        console.log('Note-->', JSON.stringify(value) )
-                        // this.workbook.sst = value
-                        break;
-                    case XLSRECORDNAME.Obj:
-                        console.log('Obj-->', JSON.stringify(value))
-                        break;
-                    case XLSRECORDNAME.Format:
-                        // console.log('Format-->', value)
-                        this.workbook.formats.push(value);
-                        break;
-                    case XLSRECORDNAME.Dimensions:
-                        if(currWorksheetInst) {
-                            currWorksheetInst.dimensions = value;
-                        }
-                        break;
-                    case XLSRECORDNAME.Country:
-                        this.workbook.country = value;
-                        break; 
-                    case XLSRECORDNAME.DBCell:
-                        console.log('DBCell-->', value)
-                        break;    
-                    case XLSRECORDNAME.TxO:
-                        console.log('TxO-->', value)
-                        break;    
-                    case XLSRECORDNAME.MulBlank:
-                        console.log('MulBlank-->', value)
-                        break;   
                     case XLSRECORDNAME.RK:
 
                         value.xf = this.workbook.xfs[value.ixfe];
@@ -374,6 +347,33 @@ export class Parse {
                         
                         currWorksheetInst?.rks.push(value)
                         currWorksheetInst?.cells.push(tempCell)
+                        break;
+                    case XLSRECORDNAME.MulBlank:
+                        console.log('MulBlank-->', value)
+                        break;   
+                    case XLSRECORDNAME.Blank:
+                        console.log('Blank-->', value)
+                        // this.workbook.sst = value
+                        break;
+                    case XLSRECORDNAME.DBCell:
+                        console.log('DBCell-->', value)
+                        break;   
+                    case XLSRECORDNAME.Obj:
+                        console.log('Obj-->', JSON.stringify(value))
+                        break;
+                    case XLSRECORDNAME.TxO:
+                        console.log('TxO-->', value)
+                        break;  
+                    case XLSRECORDNAME.Note:
+                        console.log('Note-->', JSON.stringify(value) )
+                        // this.workbook.sst = value
+                        break;
+                    case XLSRECORDNAME.MergeCells:
+                        currWorksheetInst?.mergeCells.push(value)
+                        break;
+                    case XLSRECORDNAME.HLink:
+                        console.log('HLink-->', JSON.stringify(value) )
+                        // this.workbook.sst = value
                         break;
                     case XLSRECORDNAME.EOF:
                         if(--file_depth) break; // 出栈，第一对 BOF EOF 读完了
