@@ -32,7 +32,7 @@ export function parseShortXLUnicodeString(blob: CustomCFB$Blob, length: number, 
 
     let str = '';
     if(cch) {
-        str = blob.read_shift(cch, encoding)
+        str = blob.read_shift(cch, encoding);
         blob.l = blob.l + cch;
     }
     
@@ -40,17 +40,23 @@ export function parseShortXLUnicodeString(blob: CustomCFB$Blob, length: number, 
     return str;
 }
 
-// TODO: cfb read_shift 不完全，要看下怎么补回xlsx里的那些代码
-/* 2.5.293 XLUnicodeRichExtendedString */
+
+/**
+ * @desc 2.5.293 XLUnicodeRichExtendedString
+ * @param blob 
+ * @returns 
+ */
 export function parseXLUnicodeRichExtendedString(blob: CustomCFB$Blob) {
 	let codepage = currentCodepage;
 	currentCodepage = 1200;
 	const cch = blob.read_shift(2);
 	const flags = blob.read_shift(1);
-	let /*fHighByte = flags & 0x1,*/ fExtSt = flags & 0x4, fRichSt = flags & 0x8;
-	let width = 1 + (flags & 0x1); // 0x0 -> utf8, 0x1 -> dbcs   // 拿第1位的数据  fHighByte
+	const fHighByte = flags & 0x1; 
+	const fExtSt = flags & 0x4; 
+	const fRichSt = flags & 0x8;
+	const width = 1 + (flags & 0x1); // 0x0 -> utf8, 0x1 -> dbcs   // 拿第1位的数据  fHighByte
 	let cRun = 0, cbExtRst;
-	let z = {
+	const output = {
 		t: '',
 		raw: '',
 		r: ''
@@ -59,18 +65,24 @@ export function parseXLUnicodeRichExtendedString(blob: CustomCFB$Blob) {
 	if(fExtSt) cbExtRst = blob.read_shift(4);
 	const encoding = width == 2 ? 'dbcs-cont' : 'sbcs-cont';
 	const msg = cch === 0 ? "" : blob.read_shift(cch, encoding);
-	if(fRichSt) blob.l += 4 * cRun; //TODO: parse this
-	if(fExtSt) blob.l += cbExtRst; //TODO: parse this
-	z.t = msg;
+	if(fRichSt) blob.l += 4 * cRun; 
+	if(fExtSt) blob.l += cbExtRst;
+	output.t = msg;
 	if(!fRichSt) { 
-		z.raw = "<t>" + z.t + "</t>"; 
-		z.r = z.t; 
+		output.raw = "<t>" + output.t + "</t>"; 
+		output.r = output.t; 
 	}
 	currentCodepage = codepage;
-	return z;
+	return output;
 }
 
-/* 2.5.296 XLUnicodeStringNoCch */
+/**
+ * @desc 2.5.296 XLUnicodeStringNoCch 
+ * @param blob 
+ * @param cch 
+ * @param options 
+ * @returns 
+ */
 export function parseXLUnicodeStringNoCch(blob: CustomCFB$Blob, cch: number, options?: any) {
 	let retval;
 	if(options) {
@@ -86,7 +98,13 @@ export function parseXLUnicodeStringNoCch(blob: CustomCFB$Blob, cch: number, opt
 	return retval;
 }
 
-/* 2.5.294 XLUnicodeString */
+/**
+ * @desc 2.5.294 XLUnicodeString
+ * @param blob 
+ * @param length 
+ * @param options 
+ * @returns 
+ */
 function parseXLUnicodeString(blob: CustomCFB$Blob, length: number, options?: any) {
     // const cch = blob.read_shift(2);
     const cch = blob.read_shift(options && options.biff == 2 ? 1 : 2);
@@ -98,7 +116,7 @@ function parseXLUnicodeString(blob: CustomCFB$Blob, length: number, options?: an
 }
 /* BIFF5 override */
 export function parseXLUnicodeString2(blob: CustomCFB$Blob, length: number, options?: any) {
-    return parseXLUnicodeString(blob, length)
+    return parseXLUnicodeString(blob, length);
 	// if(options.biff > 5) return parseXLUnicodeString(blob, length, options);
 	// const cch = blob.read_shift(1);
 	// if(cch === 0) { 

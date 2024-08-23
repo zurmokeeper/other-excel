@@ -39,5 +39,5 @@ export function parseFont(blob: CustomCFB$Blob, length: number) {
     const fontName = parseShortXLUnicodeString(blob, 0);
     return { dyHeight: dyHeight, fontName: fontName, fItalic, fStrikeOut,
         fShadow, fCondense, fExtend, uls, bCharSet
-    }
+    };
 }

@@ -1,5 +1,4 @@
 import { CustomCFB$Blob } from '../../../util/type';
-import { parseXLUnicodeString2 } from '../../../util/charsetParseUtil';
 import { getBit, getBitSlice } from '../../../util/index';
 
 /**
@@ -10,7 +9,7 @@ import { getBit, getBitSlice } from '../../../util/index';
  * @returns 
  */
 
-export function parseObj(blob: CustomCFB$Blob, length: number, options?: any){
+export function parseObj(blob: CustomCFB$Blob, length: number, options?: any) {
 	// if(options && options.biff < 8) return parseBIFF5Obj(blob, length, options);
 	const cmo = parseFtCmo(blob, 22); // id, ot, flags
 	// const fts = parseFtArray(blob, length-22, cmo.ot);
@@ -101,6 +100,8 @@ function parseFtArray(blob: CustomCFB$Blob, length: number) {
 			return fts; 
 		}
 	}
-	if(blob.l != endLength) blob.l = endLength; //throw new Error("bad Object Ft-sequence");
+	if(blob.l != endLength) {
+		blob.l = endLength; 
+	}
 	return fts;
 }

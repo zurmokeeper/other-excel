@@ -5,7 +5,7 @@ import { parseSST } from './sst';
 import { parseCountry } from './country';
 import { parseDimensions } from './dimensions';
 import { parseRow } from './row';
-// import { parseIndex } from './recordIndex';
+import { parseIndex } from './recordIndex';
 import { parseLabelSST } from './labelSst';
 import { parseXF } from './xf';
 import { parseFont } from './font';
@@ -23,12 +23,12 @@ import { parseObj } from './obj';
 import { parseTxO } from './txO';
 import { parseColInfo } from './colInfo';
 import { parseMulBlank } from './mulBlank';
-
+import { parseXFExt } from './xfExt';
 
 import { CustomCFB$Blob } from '../../../util/type';
 
 
-function parsenoop2(blob: CustomCFB$Blob, length: number) { 
+function parseNoop2(blob: CustomCFB$Blob, length: number) { 
     blob.read_shift(length); 
     return null; 
 }
@@ -69,7 +69,7 @@ export {
     parseLabelSST,
     parseXF,
     parseFont,
-    parsenoop2,
+    parseNoop2,
     parseRK,
     parseExtSST,
     parseWriteAccess,
@@ -87,5 +87,7 @@ export {
     parseTxO,
     parseColInfo,
     parseMulBlank,
-    parseXnum
-}
+    parseXnum,
+    parseIndex,
+    parseXFExt
+};

@@ -13,7 +13,9 @@ module.exports = {
     ],
     "rules": {
       // 自定义规则
-      "@typescript-eslint/explicit-module-boundary-types": "off"
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "semi": ["error", "always"],
+      "space-before-blocks": ["error", "always"], 
     }
-}
+};
   

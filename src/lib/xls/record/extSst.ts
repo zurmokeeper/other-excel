@@ -8,9 +8,9 @@ import { CustomCFB$Blob } from '../../../util/type';
  * @returns 
  */
 
-export function parseExtSST(blob: CustomCFB$Blob, length: number){
+export function parseExtSST(blob: CustomCFB$Blob, length: number) {
 	const dsst = blob.read_shift(2);
     // const col = blob.read_shift(2);
     blob.l += length - 2;
-	return {dsst:dsst};
+	return {dsst: dsst};
 }

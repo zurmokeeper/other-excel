@@ -1,6 +1,4 @@
 import { CustomCFB$Blob } from '../../../util/type';
-import { parseXLUnicodeString2 } from '../../../util/charsetParseUtil';
-
 /**
  * @desc [MS-XLS] 2.4.168 MergeCells
  * cmcs (2 bytes): An unsigned integer that specifies the count of Ref8 structures. MUST be less than or equal to 1026.
@@ -10,14 +8,13 @@ import { parseXLUnicodeString2 } from '../../../util/charsetParseUtil';
  * @returns 
  */
 
-export function parseMergeCells(blob: CustomCFB$Blob, length: number, options?: any){
+export function parseMergeCells(blob: CustomCFB$Blob, length: number, options?: any) {
 	const merges = [];
 	let cmcs = blob.read_shift(2);
-    console.log('--------->cmcs-->parseMergeCells', cmcs)
 	while (cmcs--) {
 		merges.push(parseRef8U(blob,length));
 	}
-	return merges;
+	return {merges: merges};
 }
 
 

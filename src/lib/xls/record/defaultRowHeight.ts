@@ -6,7 +6,7 @@ import { CustomCFB$Blob } from '../../../util/type';
  * @returns 
  */
 
-export function parseDefaultRowHeight(blob: CustomCFB$Blob, length: number, options?: any){
+export function parseDefaultRowHeight(blob: CustomCFB$Blob, length: number, options?: any) {
 	let f = 0;
 	if(!(options && options.biff == 2)) {
 		f = blob.read_shift(2);

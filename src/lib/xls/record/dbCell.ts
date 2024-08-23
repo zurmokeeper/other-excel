@@ -8,7 +8,7 @@ import { CustomCFB$Blob } from '../../../util/type';
  * @returns 
  */
 
-export function parseDBCell(blob: CustomCFB$Blob, length: number){
+export function parseDBCell(blob: CustomCFB$Blob, length: number) {
 	const dbRtrw = blob.read_shift(4);
     blob.l += length - 4;  // rgdb (variable)
 	return {dbRtrw: dbRtrw}; 

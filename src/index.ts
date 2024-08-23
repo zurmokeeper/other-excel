@@ -7,7 +7,6 @@ import * as fs from 'fs';
 import XLSX from 'xlsx';
 import WorkBook from './workbook';
 import { Parse } from './lib/xls/parse';
-// import { CustomCFB$Blob } from './util/type';
 
 const CFB = XLSX.CFB;
 
@@ -23,7 +22,7 @@ class Excel {
     this.workbook = new WorkBook();
   }
 
-  async read(data: string | Buffer | fs.ReadStream, options?: Options): Promise<WorkBook>{
+  async read(data: string | Buffer | fs.ReadStream, options?: Options): Promise<WorkBook> {
 
     let buffer;
     if (typeof data === 'string') {
@@ -60,9 +59,8 @@ class Excel {
       throw new Error('Unsupported data type');
     }
   
-    const parse = new Parse(this.workbook)
-    // parse.parse(Workbook.content as CustomCFB$Blob, options)
-    parse.parse(Workbook.content, options)
+    const parse = new Parse(this.workbook);
+    parse.parse(Workbook.content, options);
 
     return this.workbook;
   }
@@ -76,40 +74,3 @@ class Excel {
 }
 
 export default Excel;
-
-// export interface Worksheet {
-//   readonly id: number;
-// 	readonly name: string;
-//   readonly dimensions: number;
-//   properties: WorksheetProperties;
-//   readonly rowCount: number;
-//   readonly actualRowCount: number;
-//   readonly columnCount: number;
-//   readonly actualColumnCount: number;
-//   getColumn(index: number): Column;
-//   getColumns(start: number, length: number): Column[];
-//   getColumns(start: number, end: number): Column[];  ?? 选哪种
-//   getRow(index: number): Row;
-//   getRows(start: number, length: number): Row[] | undefined;
-//   getCell(r: number | string, c?: number | string): Cell;
-// }
-
-// export class Workbook {
-//   category: string;
-//   company: string;
-//   creator: string;
-//   description: string;
-//   keywords: string;
-//   lastModifiedBy: string;
-//   created: Date;
-//   manager: string;
-//   modified: Date;
-//   lastPrinted: Date;
-//   properties: WorkbookProperties;
-//   subject: string;
-//   title: string;
-//   worksheets: Worksheet[];
-//   getWorksheet(indexOrName?: number | string): Worksheet | undefined;
-// }
-
-// ixfe-> indexOfXFCell

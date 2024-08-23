@@ -11,11 +11,17 @@ import { getBit, getBitSlice } from '../../../util/index';
  * @returns 
  */
 
-export function parseNote(blob: CustomCFB$Blob, length: number, options?: any){
+export function parseNote(blob: CustomCFB$Blob, length: number, options?: any) {
 	return parseNoteSh(blob, length, options);
 }
 
-/* [MS-XLS] 2.5.186 TODO: BIFF5 */
+/**
+ * [MS-XLS] 2.5.186 
+ * @param blob 
+ * @param length 
+ * @param options 
+ * @returns 
+ */
 function parseNoteSh(blob: CustomCFB$Blob, length: number, options?: any) {
 	if(options?.biff < 8) return;
 	const row = blob.read_shift(2);
@@ -32,5 +38,3 @@ function parseNoteSh(blob: CustomCFB$Blob, length: number, options?: any) {
 	// return [{r:row,c:col}, stAuthor, idObj, flags];
 	return {cell: {row:row, col:col}, stAuthor, idObj, fShow, fRwHidden, fColHidden};
 }
-
-// 先Obj Tx0 Note

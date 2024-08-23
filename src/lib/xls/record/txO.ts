@@ -60,13 +60,6 @@ export function parseTxO(blob: CustomCFB$Blob, length: number, options?: any) {
         }
 
         blob.l = position + length;
-        /* [MS-XLS] 2.5.272 TxORuns */
-    //	var rgTxoRuns = [];
-    //	for(var j = 0; j != cbRuns/8-1; ++j) blob.l += 8;
-    //	var cchText2 = blob.read_shift(2);
-    //	if(cchText2 !== cchText) throw new Error("TxOLastRun mismatch: " + cchText2 + " " + cchText);
-    //	blob.l += 6;
-    //	if(position + length != blob.l) throw new Error("TxO " + (position + length) + ", at " + blob.l);
         return { text: texts };
     } catch(e) { 
         blob.l = position + length; 

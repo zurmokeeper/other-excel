@@ -8,7 +8,7 @@ import { CustomCFB$Blob } from '../../../util/type';
  * @param length 
  * @returns 
  */
-export function parseMulBlank(blob: CustomCFB$Blob, length: number, options: any){
+export function parseMulBlank(blob: CustomCFB$Blob, length: number, options: any) {
     const target = blob.l + length - 2;
 	const rw = blob.read_shift(2);
     const col = blob.read_shift(2);

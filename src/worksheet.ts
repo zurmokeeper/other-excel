@@ -63,7 +63,7 @@ class WorkSheet {
       if(this.cells.length === 0) return row;
       const filterCellList = this.cells.filter((item)=>item.row === index);
       const sortCellList = orderBy(filterCellList, 'col', 'asc');
-      row = {number: index, values: sortCellList}
+      row = {number: index, values: sortCellList};
       return row;
     }
 
@@ -78,19 +78,19 @@ class WorkSheet {
       //   throw new Error(`end must be less than or equal to ${MAX_COL_NUM}.`);
       // }
 
-      getRowsSchema.parse({start, end})
+      getRowsSchema.parse({start, end});
 
       if(this.cells.length === 0) return [];
       const filterCellList = this.cells.filter((item)=>item.row >= start && item.row <= end);
 
       const rangeCellList = [];
       while (start < end) {
-        const indexCellList: Row = {number: start, values: []}
+        const indexCellList: Row = {number: start, values: []};
         for (const cell of filterCellList) {
-            if(cell.row === start) indexCellList.values.push(cell)
+            if(cell.row === start) indexCellList.values.push(cell);
         }
         if(indexCellList.values.length > 0) {
-          rangeCellList.push(indexCellList)
+          rangeCellList.push(indexCellList);
         }
         start++;
       }
@@ -111,14 +111,14 @@ class WorkSheet {
       let col: Column = {number: index, values: []};
       if(this.cells.length === 0) return col;
       const filterCellList = this.cells.filter((item)=>item.col === index);
-      const sortCellList = orderBy(filterCellList, 'col', 'asc')
-      col = {number: index, values: sortCellList}
+      const sortCellList = orderBy(filterCellList, 'col', 'asc');
+      col = {number: index, values: sortCellList};
       return col;
     }
 
     getColumns(start: number, end: number): Column[] {
 
-      getRowsSchema.parse({start, end})
+      getRowsSchema.parse({start, end});
 
 
       if(this.cells.length === 0) return [];
@@ -126,12 +126,12 @@ class WorkSheet {
 
       const rangeCellList = [];
       while (start < end) {
-        const indexCellList: Column = {number: start, values: []}
+        const indexCellList: Column = {number: start, values: []};
         for (const cell of filterCellList) {
-            if(cell.row === start) indexCellList.values.push(cell)
+            if(cell.row === start) indexCellList.values.push(cell);
         }
         if(indexCellList.values.length > 0) {
-          rangeCellList.push(indexCellList)
+          rangeCellList.push(indexCellList);
         }
         start++;
       }
@@ -141,13 +141,13 @@ class WorkSheet {
     // cell 挂多个 address ->A1
     // getCell(1,1) or getCell(A1)
     getCell(row: number | string, col?: number): Cell | undefined {
-      console.log('xxxx', this.name)
-      console.log('xxxx', this.labelSsts)
+      console.log('xxxx', this.name);
+      console.log('xxxx', this.labelSsts);
     //   console.log('xxxx', this.dimensions)
-      console.log('rks', this.rks)
-      console.log('mergeCells', JSON.stringify(this.mergeCells))
+      console.log('rks', this.rks);
+      console.log('mergeCells', JSON.stringify(this.mergeCells));
 
-      console.log('cells', this.cells)
+      console.log('cells', this.cells);
 
       let realRow = row, realCol = 0;
       if(typeof row === 'string') {
@@ -172,10 +172,6 @@ class WorkSheet {
       const cell = this.cells.find((item)=>item.col === realCol && item.row === realRow);
       return cell;
     }
-
-    // parse(value: any) {
-    //     this.labelSst.push(value); // 使用当前实例的 labelSst
-    // }
 }
 
 export default WorkSheet;

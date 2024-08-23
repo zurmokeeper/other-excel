@@ -8,7 +8,7 @@ import { CustomCFB$Blob } from '../../../util/type';
  * @param length 
  * @returns 
  */
-export function parseBOF(blob: CustomCFB$Blob, length: number){
+export function parseBOF(blob: CustomCFB$Blob, length: number) {
     const output = {BIFFVer: 0, dt: 0};
     output.BIFFVer = blob.read_shift(2); 
     length -= 2;

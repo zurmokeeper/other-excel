@@ -51,3 +51,16 @@ console.log('------>workbook', workbook.Sheets['Sheet1休息休息吧'])
 //     "record": "9e00000028002a001c00",
 //     "l": 15454
 //   },
+
+//   DBCELL
+// {
+//     "header": "d7000c00",
+//     "num": 215,
+//     "size": 12,
+//     "record": "880000003c000e000e000e00",
+//     "l": 16036
+//   },
+// 16036
+
+// 第一个row的位置 + DBCell.dbRtrw
+// ROW + DBCell.dbRtrw = 15900 + 136 = 16036
