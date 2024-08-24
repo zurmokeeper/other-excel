@@ -1,4 +1,3 @@
-
 import { parseBoundSheet8 } from './boundSheet';
 import { parseBOF } from './bof';
 import { parseSST } from './sst';
@@ -27,67 +26,66 @@ import { parseXFExt } from './xfExt';
 
 import { CustomCFB$Blob } from '../../../util/type';
 
-
-function parseNoop2(blob: CustomCFB$Blob, length: number) { 
-    blob.read_shift(length); 
-    return null; 
+function parseNoop2(blob: CustomCFB$Blob, length: number) {
+  blob.read_shift(length);
+  return null;
 }
 
 function parseSlurp(blob: CustomCFB$Blob, length: number, cb: any) {
-	const arr = [];
-	const target = blob.l + length;
-	while(blob.l < target) {
-		arr.push(cb(blob, target - blob.l));
-	}
-	if(target !== blob.l) throw new Error("Slurp error");
-	return arr;
+  const arr = [];
+  const target = blob.l + length;
+  while (blob.l < target) {
+    arr.push(cb(blob, target - blob.l));
+  }
+  if (target !== blob.l) throw new Error('Slurp error');
+  return arr;
 }
 
-function parseUInt16(blob: CustomCFB$Blob) { 
-	return blob.read_shift(2, 'u'); 
+function parseUInt16(blob: CustomCFB$Blob) {
+  return blob.read_shift(2, 'u');
 }
 
-function parseUInt16a(blob: CustomCFB$Blob, length: number) { 
-	return parseSlurp(blob, length, parseUInt16);
+function parseUInt16a(blob: CustomCFB$Blob, length: number) {
+  return parseSlurp(blob, length, parseUInt16);
 }
-function parseBool(blob: CustomCFB$Blob, length: number) { 
-    return blob.read_shift(length) === 0x1; 
+function parseBool(blob: CustomCFB$Blob, length: number) {
+  return blob.read_shift(length) === 0x1;
 }
 
-function parseXnum(blob: CustomCFB$Blob, length: number) { 
-	if(blob.length - blob.l < 8) throw "XLS Xnum Buffer underflow";
-	return blob.read_shift(8, 'f');
+function parseXnum(blob: CustomCFB$Blob, length: number) {
+  if (blob.length - blob.l < 8) throw 'XLS Xnum Buffer underflow';
+  return blob.read_shift(8, 'f');
 }
 
 export {
-    parseBoundSheet8,
-    parseBOF,
-    parseSST,
-    parseCountry,
-    parseDimensions,
-    parseRow,
-    parseLabelSST,
-    parseXF,
-    parseFont,
-    parseNoop2,
-    parseRK,
-    parseExtSST,
-    parseWriteAccess,
-    parseUInt16a,
-    parseBool,
-    parseUInt16,
-    parseDBCell,
-    parseFormat,
-    parseDefaultRowHeight,
-    parseMergeCells,
-    parseBlank,
-    parseHLink,
-    parseNote,
-    parseObj,
-    parseTxO,
-    parseColInfo,
-    parseMulBlank,
-    parseXnum,
-    parseIndex,
-    parseXFExt
+  parseBoundSheet8,
+  parseBOF,
+  parseSST,
+  parseCountry,
+  parseDimensions,
+  parseRow,
+  parseLabelSST,
+  parseXF,
+  parseFont,
+  parseNoop2,
+  parseRK,
+  parseExtSST,
+  parseWriteAccess,
+  parseUInt16a,
+  parseBool,
+  parseUInt16,
+  parseDBCell,
+  parseFormat,
+  parseDefaultRowHeight,
+  parseMergeCells,
+  parseBlank,
+  parseHLink,
+  parseNote,
+  parseObj,
+  parseTxO,
+  parseColInfo,
+  parseMulBlank,
+  parseXnum,
+  parseIndex,
+  parseXFExt,
 };

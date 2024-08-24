@@ -1,8 +1,6 @@
 import { z } from 'zod';
 import {MAX_ROW_NUM, MAX_COL_NUM} from './enum';
 
-
-
 // 定义 Zod 模式并自定义错误消息
 export const getRowsSchema = z.object({
   start: z.number()

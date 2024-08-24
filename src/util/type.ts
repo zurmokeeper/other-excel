@@ -1,8 +1,10 @@
-
-
 type XLSXCFB$Blob = number[] | Uint8Array | Buffer
 export type CustomCFB$Blob = XLSXCFB$Blob & {l: number, read_shift(num: number, encoding?: string): any, continuePartDataLens: number[]}
 
+export type Options = {
+	type?: 'base64' | 'buffer' | 'stream';
+	biff?: 2 | 3 | 4 | 5 | 8;
+}
 
 export type CellValueType = 'string' | 'date' | 'hyperlink' | 'number';
 
@@ -31,11 +33,6 @@ export interface Cell {
 }
 
 export interface Row {
-    readonly number: number;
-    values: Cell[];
-}
-
-export interface Column {
     readonly number: number;
     values: Cell[];
 }
@@ -102,7 +99,6 @@ export interface Color {
 	 */
 	theme: number;
 }
-
 
 export interface Border {
 	style: BorderStyle;
