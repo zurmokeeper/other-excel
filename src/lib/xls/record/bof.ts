@@ -28,7 +28,7 @@ export function parseBOF(blob: CustomCFB$Blob, length: number) {
     case 0x0002:
     case 0x0007: /* BIFF2 */
       break;
-    default: if (length > 6) throw new Error('Unexpected BIFF Ver ' + output.BIFFVer);
+    default: if (length > 6) throw new Error(`Unexpected BIFF Ver ${output.BIFFVer}`);
   }
 
   blob.read_shift(length);

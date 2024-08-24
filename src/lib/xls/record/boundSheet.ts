@@ -24,5 +24,10 @@ export function parseBoundSheet8(blob: CustomCFB$Blob, length: number, options: 
   }
   let stName = parseShortXLUnicodeString(blob, 0, options);
   if (stName?.length === 0) stName = 'Sheet1';
-  return { pos: lbPlyPos, hiddenState: hsState, dt: dt, sheetName: stName };
+  return {
+    pos: lbPlyPos,
+    hiddenState: hsState,
+    dt: dt,
+    sheetName: stName,
+  };
 }

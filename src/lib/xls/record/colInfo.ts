@@ -18,7 +18,7 @@ export function parseColInfo(blob: CustomCFB$Blob, length: number, options: any)
   const ixfe = blob.read_shift(size);
   const flags = blob.read_shift(2);
   if (size === 2) blob.l += 2;
-  const output = {start: colFirst, end: colLast, coldx: coldx, ixfe: ixfe, flags: flags, level: 0};
+  const output = { start: colFirst, end: colLast, coldx: coldx, ixfe: ixfe, flags: flags, level: 0 };
   if (options?.biff >= 5 || !options?.biff) {
     output.level = (flags >> 8) & 0x7; //  iOutLevel 指定由 colFirst 和 colLast 定义的列范围的大纲级别。
   }
