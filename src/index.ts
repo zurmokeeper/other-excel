@@ -24,9 +24,9 @@ class Excel {
       if (options?.type === 'base64') {
         buffer = Buffer.from(data, 'base64');
       } else {
-        if (!fs.existsSync(data)) {
-          throw new Error(`File not found: ${data}`);
-        }
+        // if (!fs.existsSync(data)) {
+        //   throw new Error(`File not found: ${data}`);
+        // }
         const readStream = fs.createReadStream(data);
         const readChunks = [];
         for await (const chunk of readStream) {

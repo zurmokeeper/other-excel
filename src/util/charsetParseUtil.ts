@@ -55,9 +55,9 @@ export function parseXLUnicodeRichExtendedString(blob: CustomCFB$Blob) {
   let cRun = 0;
   let cbExtRst;
   const output = {
-    t: '',
-    raw: '',
-    r: '',
+    text: '',
+    // raw: '',
+    // r: '',
   };
   if (fRichSt) cRun = blob.read_shift(2);
   if (fExtSt) cbExtRst = blob.read_shift(4);
@@ -65,11 +65,11 @@ export function parseXLUnicodeRichExtendedString(blob: CustomCFB$Blob) {
   const msg = cch === 0 ? '' : blob.read_shift(cch, encoding);
   if (fRichSt) blob.l += 4 * cRun;
   if (fExtSt) blob.l += cbExtRst;
-  output.t = msg;
-  if (!fRichSt) {
-    output.raw = `<t>${output.t}</t>`;
-    output.r = output.t;
-  }
+  output.text = msg;
+  //   if (!fRichSt) {
+  //     output.raw = `<t>${output.t}</t>`;
+  //     output.r = output.t;
+  //   }
   currentCodepage = codepage;
   return output;
 }

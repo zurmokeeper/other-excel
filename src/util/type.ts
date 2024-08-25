@@ -25,6 +25,7 @@ export type LabelSSTValueType = {
 }
 
 export interface Cell {
+	address: string;
     value: Record<string, any>;
     type: CellValueType;
     col: number;

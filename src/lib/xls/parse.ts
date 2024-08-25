@@ -346,7 +346,7 @@ export class Parse {
             currWorksheetInst?.labelSsts.push(value);
 
             tempCell = buildCell({
-              col: value.col, row: value.row, type: value.type, text: value.value.t,
+              col: value.col, row: value.row, type: value.type, text: value.value.text,
             });
             currWorksheetInst?.cells.push(tempCell);
             break;

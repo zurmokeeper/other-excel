@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@eslint/js': ^9.9.0
+  '@jest/globals': ^29.7.0
   '@types/eslint__js': ^8.42.3
   '@types/jest': ^29.5.12
   '@types/lodash': ^4.17.7
@@ -22,10 +23,13 @@ specifiers:
 
 dependencies:
   cfb: 1.2.2
+  lodash: 4.17.21
   xlsx: 0.18.5
+  zod: 3.23.8
 
 devDependencies:
   '@eslint/js': 9.9.0
+  '@jest/globals': 29.7.0
   '@types/eslint__js': 8.42.3
   '@types/jest': 29.5.12
   '@types/lodash': 4.17.7
@@ -36,11 +40,9 @@ devDependencies:
   eslint-config-airbnb-base: 15.0.0_jrbq5spb6ym3vlo5mnlvtmgpyy
   eslint-plugin-import: 2.29.1_ecfxyshro5xlgbhdegdbzxk2oy
   jest: 29.7.0_@types+node@20.14.12
-  lodash: 4.17.21
   ts-jest: 29.2.4_m7vbrry3evxccnqda3e2m7rane
   typescript: 5.5.4
   typescript-eslint: 8.1.0_qusgslmwnowdaqieuropes6b5q
-  zod: 3.23.8
 
 packages:
 
@@ -2982,7 +2984,7 @@ packages:
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-    dev: true
+    dev: false
 
   /lru-cache/5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
@@ -3913,4 +3915,4 @@ packages:
 
   /zod/3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
-    dev: true
+    dev: false

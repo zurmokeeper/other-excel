@@ -1,7 +1,5 @@
-
 import { CustomCFB$Blob } from '../../../util/type';
 import { parseXLUnicodeRichExtendedString } from '../../../util/charsetParseUtil';
-
 
 /**
  * @desc [MS-XLS] 2.4.265  SST

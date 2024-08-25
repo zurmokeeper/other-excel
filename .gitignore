@@ -1,3 +1,4 @@
 node_modules/
 /src/util/customCfbJS.js
 dist/
+coverage/
