@@ -24,9 +24,9 @@ class Excel {
       if (options?.type === 'base64') {
         buffer = Buffer.from(data, 'base64');
       } else {
-        // if (!fs.existsSync(data)) {
-        //   throw new Error(`File not found: ${data}`);
-        // }
+        if (!fs.existsSync(data)) {
+          throw new Error(`File not found: ${data}.`);
+        }
         const readStream = fs.createReadStream(data);
         const readChunks = [];
         for await (const chunk of readStream) {
@@ -43,14 +43,14 @@ class Excel {
       }
       buffer = Buffer.concat(chunks);
     } else {
-      throw new Error('Unsupported data type');
+      throw new Error('Unsupported data type!'); // TODO: 是否有必要还需要这个校验
     }
     const cfb = CFB.read(buffer, { type: 'buffer' });
     const Workbook = CFB.find(cfb, '/Workbook') || CFB.find(cfb, '/Book');
     // const cfb = XLSX.CFB.read(buffer, {type: 'buffer'});
     // const Workbook = XLSX.CFB.find(cfb, '/Workbook') || XLSX.CFB.find(cfb, '/Book');
     if (!Workbook) {
-      throw new Error('Unsupported data type');
+      throw new Error('Unsupported file type!');
     }
 
     const parse = new Parse(this.workbook);

@@ -6,7 +6,8 @@ async function name() {
   const otherExcel = new OtherExcel();
   let workbook1;
   try {
-    workbook1 = await otherExcel.read('./tests/xxxxxx/test1-merge.xls');
+    const data = './tests/xxxxxx/test1-merge.xls';
+    workbook1 = await otherExcel.read(data);
   } catch (error) {
     // console.log('xxxxxxxxxxxxxxxxx-->', error);
     // throw error      

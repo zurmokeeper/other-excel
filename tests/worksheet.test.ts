@@ -1,5 +1,7 @@
 import { ZodError } from 'zod';
-import { describe, it, expect, beforeAll } from '@jest/globals';
+import {
+  describe, it, expect, beforeAll,
+} from '@jest/globals';
 
 import OtherExcel from '../src/index';
 import WorkBook from '../src/workbook';

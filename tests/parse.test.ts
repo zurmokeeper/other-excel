@@ -1,5 +1,5 @@
 import {
-  describe, it, expect, beforeAll,
+  describe, it, expect,
 } from '@jest/globals';
 import fs from 'fs';
 import OtherExcel from '../src/index';
@@ -10,33 +10,44 @@ const filePath = './tests/test1-merge.xls';
 describe('read()', () => {
   it('read(): The parameter is the file path, options.type is base64, success.', async () => {
     const buffer = await fs.promises.readFile(filePath);
-    const workbook = await otherExcel.read(buffer.toString('base64'), { type: 'base64' });
+    await otherExcel.read(buffer.toString('base64'), { type: 'base64' });
   });
 
   it('read(): The parameter is the file path, success.', async () => {
-    const workbook = await otherExcel.read(filePath);
+    await otherExcel.read(filePath);
   });
 
   it('read(): The parameter is buffer, success.', async () => {
     const buffer = await fs.promises.readFile(filePath);
-    const workbook = await otherExcel.read(buffer);
+    await otherExcel.read(buffer);
   });
 
   it('read(): The parameter is stream, success.', async () => {
     const stream = await fs.createReadStream(filePath);
-    const workbook = await otherExcel.read(stream);
+    await otherExcel.read(stream);
   });
 
-  it.only('read(): no such file or directory', async () => {
+  it('read(): no such file or directory', async () => {
     try {
       const data = '/path/xxx';
-      const workbook = await otherExcel.read(data);
+      await otherExcel.read(data);
     } catch (error) {
       if (error instanceof Error) {
-        console.log('xxxxxxxxxxxxxxxxx-->', error.message);
-        expect(error.message).toMatch(/ENOENT: no such file or directory/);
+        expect(error.message).toMatch('File not found:');
       } else {
-        console.log('xxxxxxxxxxxxxxxxx-->1312');
+        throw error;
+      }
+    }
+  });
+
+  it('read(): Unsupported file type!', async () => {
+    try {
+      const data = './tests/test.docx';
+      await otherExcel.read(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        expect(error.message).toBe('Unsupported file type!');
+      } else {
         throw error;
       }
     }
