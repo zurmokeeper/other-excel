@@ -19,7 +19,7 @@ interface ParseFuncOptions {
 
 interface XLSRecord {
 	func?: (blob: CustomCFB$Blob, length: number, options?: ParseFuncOptions) => any;
-    name: string;
+  name: string;
 }
 
 interface XLSRecordEnum {

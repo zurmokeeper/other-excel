@@ -1,6 +1,6 @@
 import { CustomCFB$Blob } from '../../../util/type';
 import { parseXLUnicodeString2 } from '../../../util/charsetParseUtil';
-import { getBit, getBitSlice } from '../../../util/index';
+import { getBit } from '../../../util/index';
 
 /**
  * [MS-XLS] 2.5.186
@@ -10,7 +10,7 @@ import { getBit, getBitSlice } from '../../../util/index';
  * @returns
  */
 function parseNoteSh(blob: CustomCFB$Blob, length: number, options?: any) {
-  if (options?.biff < 8) return;
+  // if (options?.biff < 8) return;
   const row = blob.read_shift(2);
   const col = blob.read_shift(2);
   const buffer = blob.read_shift(2);
@@ -38,5 +38,6 @@ function parseNoteSh(blob: CustomCFB$Blob, length: number, options?: any) {
  */
 
 export function parseNote(blob: CustomCFB$Blob, length: number, options?: any) {
-  return parseNoteSh(blob, length, options);
+  const output = parseNoteSh(blob, length, options);
+  return output;
 }

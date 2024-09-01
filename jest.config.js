@@ -1,5 +1,5 @@
 module.exports = {
-  preset: 'ts-jest',
+  // preset: 'ts-jest',
   testEnvironment: 'node',
   // silent: true,
   coverageDirectory: 'coverage',
@@ -11,4 +11,7 @@ module.exports = {
   ],
   testTimeout: 15000,
   verbose: true,
+  transform: {
+    '^.+\\.(t|j)sx?$': '@swc-node/jest',
+  },
 };

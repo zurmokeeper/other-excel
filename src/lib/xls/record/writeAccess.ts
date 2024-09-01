@@ -13,6 +13,6 @@ export function parseWriteAccess(blob: CustomCFB$Blob, length: number, options?:
   // if(options.enc) { blob.l += length; return ""; } //TODO:
   const posItion = blob.l;
   const userName = parseXLUnicodeString2(blob, 0, options);
-  blob.read_shift(posItion + length - blob.l); // 跳过后面的 unused (variable)
+  blob.read_shift(posItion + length - blob.l); // skip unused (variable)
   return { userName: userName };
 }

@@ -1,6 +1,16 @@
 import { CustomCFB$Blob } from '../../../util/type';
 import { parseXLUnicodeRichExtendedString } from '../../../util/charsetParseUtil';
 
+type Strs = {
+  text: string;
+}
+
+type SSTValue = {
+  strs: Strs[];
+  count: number,
+  uniqueCount: number,
+}
+
 /**
  * @desc [MS-XLS] 2.4.265  SST
  * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/b6231b92-d32e-4626-badd-c3310a672bab
@@ -22,11 +32,11 @@ export function parseSST(blob: CustomCFB$Blob, length: number) {
   const cstTotal = blob.read_shift(4);
   const cstUnique = blob.read_shift(4);
 
-  const strs : any = [];
+  const strs : Strs[] = [];
   for (let i = 0; i !== cstUnique && blob.l < end; ++i) {
     strs.push(parseXLUnicodeRichExtendedString(blob));
   }
-  const output = {
+  const output: SSTValue = {
     strs: [],
     count: 0,
     uniqueCount: 0,

@@ -1,5 +1,5 @@
 import { parseShortXLUnicodeString } from '../../../util/charsetParseUtil';
-import { getBit, getBitSlice } from '../../../util/index';
+import { getBit } from '../../../util/index';
 import { CustomCFB$Blob } from '../../../util/type';
 
 /**

@@ -1,7 +1,22 @@
 import { Cell, CellValueType } from './type';
 
-// 获取某一个bit 位的值
+/**
+ * @desc 获取某一个bit 位的值
+ * @param bits decimal number
+ * @param i The first digit, starting from 0, with 0 indicating the first digit
+ * @returns
+ */
 export const getBit = (bits: number, i: number) => (bits & (1 << i)) >> i;
+
+/**
+ * @desc 获取连续几个bit 位的值  getBitSlice(10, 0, 4)
+ * Indicates the value expressed by taking the first to the fourth digit, a total of four digits.
+ *
+ * @param bits decimal number
+ * @param i The first digit, starting from 0, with 0 indicating the first digit
+ * @param w 长度
+ * @returns
+ */
 export const getBitSlice = (bits: number, i: number, w: number) => (bits & ((2 ** w - 1) << i)) >> i;
 
 export function decodeCell(str: string) {

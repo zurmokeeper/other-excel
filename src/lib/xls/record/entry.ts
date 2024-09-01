@@ -53,7 +53,9 @@ function parseBool(blob: CustomCFB$Blob, length: number) {
 }
 
 function parseXnum(blob: CustomCFB$Blob, length: number) {
-  if (blob.length - blob.l < 8) throw 'XLS Xnum Buffer underflow';
+  if (blob.length - blob.l < 8) {
+    throw new Error('XLS Xnum Buffer underflow');
+  }
   return blob.read_shift(8, 'f');
 }
 

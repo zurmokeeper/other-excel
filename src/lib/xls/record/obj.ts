@@ -1,5 +1,4 @@
 import { CustomCFB$Blob } from '../../../util/type';
-import { getBit, getBitSlice } from '../../../util/index';
 
 /**
  * @desc [MS-XLS] 2.5.143 FtCmo
@@ -21,17 +20,17 @@ function parseFtArray(blob: CustomCFB$Blob, length: number) {
   const endLength = blob.l + length;
   const fts = [];
   while (blob.l < endLength) {
-	  const ft = blob.read_shift(2);
-	  blob.l -= 2;
-	  try {
+    const ft = blob.read_shift(2);
+    blob.l -= 2;
+    try {
       fts.push(FtTab[ft](blob, endLength - blob.l));
-	  } catch (e) { // TODO:
+    } catch (e) { // TODO:
       blob.l = endLength;
       return fts;
-	  }
+    }
   }
   if (blob.l !== endLength) {
-	  blob.l = endLength;
+    blob.l = endLength;
   }
   return fts;
 }

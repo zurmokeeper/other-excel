@@ -4,23 +4,23 @@ import { z } from 'zod';
 
 async function name() {
   const otherExcel = new OtherExcel();
-  let workbook1;
-  try {
-    const data = './tests/xxxxxx/test1-merge.xls';
-    workbook1 = await otherExcel.read(data);
-  } catch (error) {
-    // console.log('xxxxxxxxxxxxxxxxx-->', error);
-    // throw error      
-    if (error instanceof Error) {
-        console.log('xxxxxxxxxxxxxxxxx-->', error.message, error.message.includes('ENOENT: no such file or directory'));
-        // expect(error.message).toContain('ENOENT: no such file or directory');
-      } else {
-        throw error;
-      }
+  // let workbook1;
+  // try {
+  //   const data = './tests/xxxxxx/test1-merge.xls';
+  //   workbook1 = await otherExcel.read(data);
+  // } catch (error) {
+  //   // console.log('xxxxxxxxxxxxxxxxx-->', error);
+  //   // throw error      
+  //   if (error instanceof Error) {
+  //       console.log('xxxxxxxxxxxxxxxxx-->', error.message, error.message.includes('ENOENT: no such file or directory'));
+  //       // expect(error.message).toContain('ENOENT: no such file or directory');
+  //     } else {
+  //       throw error;
+  //     }
 
-  }
+  // }
 //   const workbook1 = await otherExcel.read('./tests/xxxxxx/test1-merge.xls');
-//   const workbook1 = await otherExcel.read('./tests/test1-merge.xls');
+  const workbook1 = await otherExcel.read('./tests/test1-merge.xls');
   // const workbook1 = await otherExcel.read('../tests/test1.xls') //直接ts-node 用 在src下用
   // const workbook1 = await otherExcel.read('./tests/test1.xls') //直接ts-node 用 在项目目录下 和 tsc
   // console.log('0------->xf', JSON.stringify(workbook1.xfs) )
@@ -34,7 +34,7 @@ async function name() {
 
   // workbook1.setWorksheet()
   // console.log('workbook1', workbook1)
-//   const worksheet = workbook1.getWorksheet(0);
+  const worksheet = workbook1.getWorksheet(0);
 //   // console.log('worksheet', worksheet)
 //   const cell = worksheet.getCell('A3');
 //   console.log('cell', cell);

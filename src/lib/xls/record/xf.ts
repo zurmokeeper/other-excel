@@ -158,9 +158,9 @@ const fillPatternMap: Record<number, string> = {
 
 function parseCellStyleXF(blob: CustomCFB$Blob, length: number, style: number, options?: any) {
   const a = blob.read_shift(1);
-  const alc = getBitSlice(a, 0, 2);
+  const alc = getBitSlice(a, 0, 3);
   const fWrap = getBit(a, 3);
-  const alcV = getBitSlice(a, 4, 6);
+  const alcV = getBitSlice(a, 4, 3);
   const fJustLast = getBit(a, 7);
 
   const horizontal = horizontalMap[alc];
@@ -172,10 +172,10 @@ function parseCellStyleXF(blob: CustomCFB$Blob, length: number, style: number, o
 
   const b = blob.read_shift(2);
 
-  const cIndent = getBitSlice(b, 0, 3); // 4bit
+  const cIndent = getBitSlice(b, 0, 4); // 4bit
   const fShrinkToFit = getBit(b, 4);
   const reserved1 = getBit(b, 5);
-  const iReadOrder = getBitSlice(b, 6, 7); // 2bit
+  const iReadOrder = getBitSlice(b, 6, 2); // 2bit
 
   const shrinkToFit = !!fShrinkToFit;
   const readingOrder = readingOrderMap[iReadOrder];
@@ -185,7 +185,7 @@ function parseCellStyleXF(blob: CustomCFB$Blob, length: number, style: number, o
   };
 
   // 下面这个1byte 在styleXF 里忽略的,cellXF 才需要的
-  const reserved2 = getBitSlice(b, 8, 9);
+  const reserved2 = getBitSlice(b, 8, 2);
   const fAtrNum = getBit(b, 10);
   const fAtrFnt = getBit(b, 11);
   const fAtrAlc = getBit(b, 12);
@@ -197,9 +197,9 @@ function parseCellStyleXF(blob: CustomCFB$Blob, length: number, style: number, o
 
   // 这个是border 部分
   const dgLeft = getBitSlice(c, 0, 3);
-  const dgRight = getBitSlice(c, 4, 7);
-  const dgTop = getBitSlice(c, 8, 11);
-  const dgBottom = getBitSlice(c, 12, 15);
+  const dgRight = getBitSlice(c, 4, 3);
+  const dgTop = getBitSlice(c, 8, 3);
+  const dgBottom = getBitSlice(c, 12, 3);
 
   const left = borderStyleMap[dgLeft];
   const right = borderStyleMap[dgRight];
@@ -210,25 +210,25 @@ function parseCellStyleXF(blob: CustomCFB$Blob, length: number, style: number, o
     left, right, top, bottom,
   };
 
-  const icvLeft = getBitSlice(c, 16, 22); // 7bit
-  const icvRight = getBitSlice(c, 23, 29); // 7bit
-  const grbitDiag = getBitSlice(c, 30, 31); // 2bit
+  const icvLeft = getBitSlice(c, 16, 7); // 7bit
+  const icvRight = getBitSlice(c, 23, 7); // 7bit
+  const grbitDiag = getBitSlice(c, 30, 2); // 2bit
 
   const d = blob.read_shift(4);
-  const icvTop = getBitSlice(d, 0, 6); // 7bit
-  const icvBottom = getBitSlice(d, 7, 13); // 7bit
-  const icvDiag = getBitSlice(d, 14, 20); // 7bit
-  const dgDiag = getBitSlice(d, 21, 24);// 4bit
+  const icvTop = getBitSlice(d, 0, 7); // 7bit
+  const icvBottom = getBitSlice(d, 7, 7); // 7bit
+  const icvDiag = getBitSlice(d, 14, 7); // 7bit
+  const dgDiag = getBitSlice(d, 21, 4);// 4bit
   const fHasXFExt = getBit(d, 25); // 1bit
-  const fls = getBitSlice(d, 26, 31); // 6bit
+  const fls = getBitSlice(d, 26, 6); // 6bit
 
   const diagonal = borderDiagonalMap[dgDiag];
   const fillPattern = fillPatternMap[fls];
 
   const e = blob.read_shift(2);
   // 2个byte
-  const icvFore = getBitSlice(e, 0, 6);// 7biy
-  const icvBack = getBitSlice(e, 7, 13);// 7bit
+  const icvFore = getBitSlice(e, 0, 7);// 7biy
+  const icvBack = getBitSlice(e, 7, 7);// 7bit
   const fsxButton = getBit(e, 14);// 1bit
   const reserved3 = getBit(e, 15);// 1bit
 
