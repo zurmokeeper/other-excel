@@ -1,6 +1,6 @@
 import OtherExcel from './index';
 // import _ from 'lodash';
-import { z } from 'zod';
+// import { z } from 'zod';
 
 async function name() {
   const otherExcel = new OtherExcel();
@@ -33,8 +33,9 @@ async function name() {
   // console.log('0------->format', JSON.stringify(workbook1.formats) )
 
   // workbook1.setWorksheet()
-  // console.log('workbook1', workbook1)
-  const worksheet = workbook1.getWorksheet(0);
+  // console.log('workbook1', workbook1);
+  console.log('workbook1', workbook1.sheetNames);
+  const worksheet = workbook1.getWorksheet('xx');
 //   // console.log('worksheet', worksheet)
 //   const cell = worksheet.getCell('A3');
 //   console.log('cell', cell);
@@ -42,17 +43,22 @@ async function name() {
 //   const worksheet1 = workbook1.getWorksheet(1);
 //   worksheet1.getCell('A3');
 
-  // const row = worksheet.getRow(3)
-  // console.log('row', row)
+  // const row = worksheet.getRow(3);
+  // console.log('row', row);
 
   // const col = worksheet.getColumn(0)
   // console.log('col', col)
 
-  // const rows = worksheet.getRows(-2, 4)
-  // console.log('rows', rows)
+  // const rows = worksheet.getRows(2, 3)
+  // console.log('rows', JSON.stringify(rows) )
 
-  // const col = worksheet.getColumn(0)
-  // console.log('row', col)
+  // const col = worksheet.getColumn('A1')
+  // const col = worksheet.getColumn('1')
+  // const col = worksheet.getColumn('xx')
+  // console.log('row', JSON.stringify(col) )
+
+  const cols = worksheet.getColumns(4, 5)
+  console.log('cols', JSON.stringify(cols) )
 }
 
 name();

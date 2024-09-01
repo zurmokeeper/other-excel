@@ -11,8 +11,12 @@ export interface ParseFuncOptions extends Options {
 
 export type CellValueType = 'string' | 'date' | 'hyperlink' | 'number';
 
+export type StrsType = {
+	text: string;
+}
+
 export type SSTValueType = {
-    strs: Record<string, any>[];
+    strs: StrsType[];
     count: number;
     uniqueCount: number;
 }
@@ -27,9 +31,13 @@ export type LabelSSTValueType = {
     xf: Record<string, any>;
 }
 
+export interface CellValue {
+	value: number | string;
+}
+
 export interface Cell {
 	address: string;
-    value: Record<string, any>;
+    value: CellValue;
     type: CellValueType;
     col: number;
     row: number;

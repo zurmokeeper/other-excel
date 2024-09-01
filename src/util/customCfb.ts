@@ -1,4 +1,3 @@
-
 // var has_buf = (function() { return typeof Buffer !== 'undefined' && typeof process !== 'undefined' && typeof process.versions !== 'undefined' && !!process.versions.node; })();
 
 // var chr0 = /\u0000/g, chr1 = /[\u0001-\u0006]/g;

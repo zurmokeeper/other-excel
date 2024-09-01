@@ -21,16 +21,36 @@ describe('WorkBook', () => {
   });
 
   it('new WorkBook().getWorksheet: Worksheet at index id not found.', async () => {
-    const id = 2;
+    const id = 3;
+    const test = function test() {
+      return function test1() {
+        workbook.getWorksheet(id);
+      };
+    };
+    expect(test()).toThrowError(new Error(`Worksheet at index ${id} not found.`));
+  });
+
+  it('new WorkBook().getWorksheet: Worksheet at index id not found.', async () => {
+    const id = -1;
     try {
       const worksheet = workbook.getWorksheet(id);
     } catch (error) {
       if (error instanceof Error) {
-        expect(error.message).toMatch(`Worksheet at index ${id} not found.`);
+        expect(error.message).toBe(`Worksheet at index ${id} not found.`);
       } else {
         throw error;
       }
     }
+  });
+
+  it('new WorkBook().getWorksheet: SheetName xx not found.', async () => {
+    const id = 'xx';
+    const test = function test() {
+      return function test1() {
+        workbook.getWorksheet(id);
+      };
+    };
+    expect(test()).toThrowError(new Error(`SheetName ${id} not found.`));
   });
 
   it('new WorkBook().getWorksheet: The parameter is string,  success.', async () => {

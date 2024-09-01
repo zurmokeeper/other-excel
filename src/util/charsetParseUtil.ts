@@ -19,7 +19,7 @@ export function parseShortXLUnicodeString(blob: CustomCFB$Blob, length: number, 
   let encoding = 'sbcs-cont';
   const codepage = currentCodepage;
   if (options && options.biffVer >= 8) currentCodepage = 1200;
-  if (!options || options.biffVer === 8) {
+  if (!options || Object.keys(options).length === 0 || options.biffVer === 8) {
     const fHighByte = blob.read_shift(1);
     if (fHighByte) {
       encoding = 'dbcs-cont';

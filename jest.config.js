@@ -1,7 +1,7 @@
 module.exports = {
   // preset: 'ts-jest',
   testEnvironment: 'node',
-  // silent: true,
+  silent: true,
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
   testMatch: [

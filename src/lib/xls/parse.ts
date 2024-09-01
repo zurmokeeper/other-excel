@@ -240,7 +240,7 @@ export class Parse {
             this.workbook.formats.push(value);
             break;
           case XLSRECORDNAME.XF:
-            console.log('XF-->', JSON.stringify(value));
+            // console.log('XF-->', JSON.stringify(value));
             this.workbook.xfs.push(value);
             break;
           case XLSRECORDNAME.XFExt:

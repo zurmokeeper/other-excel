@@ -19,24 +19,30 @@ export const getBit = (bits: number, i: number) => (bits & (1 << i)) >> i;
  */
 export const getBitSlice = (bits: number, i: number, w: number) => (bits & ((2 ** w - 1) << i)) >> i;
 
+/**
+ * decodeCell(A) -> {row: col: 0}
+ * @param str A
+ * @returns
+ */
 export function decodeCell(str: string) {
-  let row = 0, col = 0;
-  for(let i = 0; i < str.length; ++i) {
+  let row = 0;
+  let col = 0;
+  for (let i = 0; i < str.length; ++i) {
     const code = str.charCodeAt(i);
-    if(code >= 48 && code <= 57) {
+    if (code >= 48 && code <= 57) {
       row = 10 * row + (code - 48);
-    }else if(code >= 65 && code <= 90) {
+    } else if (code >= 65 && code <= 90) {
       col = 26 * col + (code - 64);
     }
   }
-  if(row < 0 || col < 0) throw new Error('参数格式异常，请输入正确的格式');
+  if (row < 0 || col < 0) throw new Error('Abnormal parameter format, please enter the correct format.');
   return { col: col - 1, row: row - 1 };
 }
 
 export function encodeCell(row: number, col: number) {
   col = col + 1;
-  let str = "";
-  for(; col; col=((col-1)/26)|0) str = String.fromCharCode(((col-1)%26) + 65) + str;
+  let str = '';
+  for (; col; col = ((col - 1) / 26) | 0) str = String.fromCharCode(((col - 1) % 26) + 65) + str;
   return str + (row + 1);
 }
 

@@ -41,16 +41,16 @@ class WorkBook {
   }
 
   getWorksheet(id: number | string) {
-    // if (!this.workbook) {
-    //     throw new Error('Workbook is not loaded. Call read() first.');
-    // }
-
     if (typeof id === 'number') {
       const sheetName = this.sheetNames[id];
       if (!sheetName) {
         throw new Error(`Worksheet at index ${id} not found.`);
       }
       return this.worksheet[sheetName];
+    }
+    const sheetName = this.sheetNames.find((name) => name === id);
+    if (!sheetName) {
+      throw new Error(`SheetName ${id} not found.`);
     }
     return this.worksheet[id];
   }
