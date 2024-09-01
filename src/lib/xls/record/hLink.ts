@@ -65,6 +65,7 @@ function parseFILETIME(blob: CustomCFB$Blob) {
   return new Date(((dwHighDateTime / 1e7 * 2 ** 32 + dwLowDateTime / 1e7) - 11644473600) * 1000).toISOString().replace(/\.000/, '');
 }
 
+/* [MS-OSHARED] 2.3.7.1 Hyperlink Object */
 // 000 11100  buffer & 0x0010
 function parseHyperlink(blob: CustomCFB$Blob, length: number) {
   const end = blob.l + length;
@@ -141,30 +142,3 @@ export function parseHLink(blob: CustomCFB$Blob, length: number) {
   const hyperlink = parseHyperlink(blob, length - 24);
   return { ref: ref8, hyperlink: hyperlink };
 }
-
-/* [MS-OSHARED] 2.3.7.1 Hyperlink Object */
-// function parseHyperlink(blob: CustomCFB$Blob, length: number) {
-//   var end = blob.l + length;
-//   var sVer = blob.read_shift(4);
-//   if(sVer !== 2) throw new Error(`Unrecognized streamVersion: ${  sVer}`);
-//   var flags = blob.read_shift(2);
-//   blob.l += 2;
-//   var displayName, targetFrameName, moniker, oleMoniker, Loc = '', guid, fileTime;
-//   if(flags & 0x0010) displayName = parseHyperlinkString(blob, end - blob.l);
-//   if(flags & 0x0080) targetFrameName = parseHyperlinkString(blob, end - blob.l);
-//   if((flags & 0x0101) === 0x0101) moniker = parseHyperlinkString(blob, end - blob.l);
-//   if((flags & 0x0101) === 0x0001) oleMoniker = parseHyperlinkMoniker(blob, end - blob.l);
-//   if(flags & 0x0008) Loc = parseHyperlinkString(blob, end - blob.l);
-//   if(flags & 0x0020) guid = blob.read_shift(16);
-//   if(flags & 0x0040) fileTime = parseFILETIME(blob/*, 8*/);
-//   blob.l = end;
-//   var target = targetFrameName || moniker || oleMoniker || '';
-//   if(target && Loc) target += `#${  Loc}`;
-//   if(!target) target = `#${  Loc}`;
-//   if((flags & 0x0002) && target.charAt(0) == '/' && target.charAt(1) != '/') target = `file://${  target}`;
-//   var out = { Target:target, guid: '', time: '', Tooltip: '' };
-//   if(guid) out.guid = guid;
-//   if(fileTime) out.time = fileTime;
-//   if(displayName) out.Tooltip = displayName;
-//   return out;
-// }
