@@ -10,7 +10,7 @@ import { CustomCFB$Blob } from '../../../util/type';
  */
 export function parseDimensions(blob: CustomCFB$Blob, length: number, options: any) {
   const end = blob.l + length;
-  // const size = options?.biff == 8 || !options.biff ? 4 : 2;
+  // const size = options?.biffVer == 8 || !options.biffVer ? 4 : 2;
   const size = 4;
   // rwMic  // 包含单元格的第一行
   // rwMac

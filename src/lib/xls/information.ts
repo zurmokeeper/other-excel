@@ -271,7 +271,7 @@
 // 	UDI: "05d5cdd59c2e1b10939708002b2cf9ae"
 // };
 
-// function parseProperty(cfb: any, options?: any) {
+// function parseProperty(cfb: any, options?: ParseFuncOptions) {
 
 //     // if(cfb.FullPaths) parse_xls_props(cfb, props, options);
 //     const props = {};

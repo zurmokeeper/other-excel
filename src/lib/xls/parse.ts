@@ -1,5 +1,5 @@
 import XLSX from 'xlsx';
-import { CustomCFB$Blob, Options } from '../../util/type';
+import { CustomCFB$Blob, Options, ParseFuncOptions } from '../../util/type';
 import {
   parseBoundSheet8, parseBOF, parseSST, parseLabelSST, parseCountry,
   parseDimensions, parseRow, parseXF, parseFont, parseNoop2, parseRK,
@@ -12,10 +12,6 @@ import WorkBook from '../../workbook';
 import { buildCell } from '../../util/index';
 
 const { CFB } = XLSX;
-
-interface ParseFuncOptions {
-    biff: 2 | 3 | 4 | 5 | 8;
-}
 
 interface XLSRecord {
 	func?: (blob: CustomCFB$Blob, length: number, options?: ParseFuncOptions) => any;
@@ -129,7 +125,7 @@ const BOFList = [0x0009, 0x0209, 0x0409, 0x0809];
 const CONTINUERT = [0x003c, 0x043c, 0x0812, 0x0875, 0x087f];
 
 // blob.l 是正式内容的偏移量开头了，已经读了 num 和 size 了
-function slurp(blob: CustomCFB$Blob, length: number, record: XLSRecord) {
+function slurp(blob: CustomCFB$Blob, length: number, record: XLSRecord, options: ParseFuncOptions) {
   const data = blob.slice(blob.l, blob.l + length);
   blob.l += length;
   if (!record || !record.func) {
@@ -144,9 +140,9 @@ function slurp(blob: CustomCFB$Blob, length: number, record: XLSRecord) {
     blob.l += 2; // skip num
     const continueSize = blob.read_shift(2);
     let start = blob.l;
-    if (nextRecordType == 0x0812 /* ContinueFrt */) {
+    if (nextRecordType === 0x0812 /* ContinueFrt */) {
       start += 4;
-    } else if (nextRecordType == 0x0875 || nextRecordType == 0x087f) {
+    } else if (nextRecordType === 0x0875 || nextRecordType === 0x087f) {
       start += 12;
     }
     const continueData = blob.slice(start, blob.l + continueSize);
@@ -169,9 +165,9 @@ function slurp(blob: CustomCFB$Blob, length: number, record: XLSRecord) {
   // 第2个元素 continue 前一个记录的数据部分长度
   // ...第3个元素 前2个元素数据部分长度的总和
   // ...第4个元素 前3个元素数据部分长度的总和
-  if (totalData.length < length) throw 'XLS Record 0x';
+  if (totalData.length < length) throw new Error('XLS Record 0x');
 
-  const result = record.func(totalData, length);
+  const result = record.func(totalData, length, options);
   return result;
 }
 
@@ -189,7 +185,7 @@ export class Parse {
     let currWorksheetInst;
     let tempCell;
     let sheetIndex = -1;
-    const parseFuncOptions = { biff: 0 };
+    const parseFuncOptions: ParseFuncOptions = {};
     while (blob.l < blob.length - 1) {
       const position = blob.l; // 每个record 第一个数据的偏移量
       const recordType = blob.read_shift(2) as number;
@@ -203,7 +199,7 @@ export class Parse {
           value = record.func(blob, size);
         }
       } else {
-        value = slurp(blob, size, record);
+        value = slurp(blob, size, record, parseFuncOptions);
       }
 
       // if(fileDepth == 0 && BOFList.indexOf(last_RT) === -1 /* 'BOF' */) continue;
@@ -248,7 +244,7 @@ export class Parse {
             this.workbook.xfs.push(value);
             break;
           case XLSRECORDNAME.XFExt:
-            console.log('XFExt-->', JSON.stringify(value));
+            // console.log('XFExt-->', JSON.stringify(value));
             break;
           case XLSRECORDNAME.BoundSheet8:
             currWorksheet[value.pos] = value;
@@ -262,7 +258,6 @@ export class Parse {
             break;
           case XLSRECORDNAME.ExtSST:
             console.log('ExtSST-->', value);
-            // this.workbook.sst = value
             break;
           case XLSRECORDNAME.BOF:
             fileDepth++;
@@ -275,7 +270,7 @@ export class Parse {
             currWorksheetInst.index = sheetIndex;
             currWorksheetInst.actualRowCount = 0;
 
-            parseFuncOptions.biff = value.BIFFVer;
+            parseFuncOptions.biffVer = value.BIFFVer;
 
             break;
           case XLSRECORDNAME.Index:

@@ -10,7 +10,7 @@ import { CustomCFB$Blob } from '../../../util/type';
  */
 
 export function parseColInfo(blob: CustomCFB$Blob, length: number, options: any) {
-  const size = options?.biff >= 12 ? 4 : 2;
+  const size = options?.biffVer >= 12 ? 4 : 2;
   const colFirst = blob.read_shift(size);
   const colLast = blob.read_shift(size);
   const coldx = blob.read_shift(size);
@@ -20,7 +20,7 @@ export function parseColInfo(blob: CustomCFB$Blob, length: number, options: any)
   const output = {
     start: colFirst, end: colLast, coldx: coldx, ixfe: ixfe, flags: flags, level: 0,
   };
-  if (options?.biff >= 5 || !options?.biff) {
+  if (options?.biffVer >= 5 || !options?.biffVer) {
     output.level = (flags >> 8) & 0x7; //  iOutLevel 指定由 colFirst 和 colLast 定义的列范围的大纲级别。
   }
   return output;

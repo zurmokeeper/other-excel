@@ -1,4 +1,4 @@
-import { CustomCFB$Blob } from '../../../util/type';
+import { CustomCFB$Blob, ParseFuncOptions } from '../../../util/type';
 
 /**
  * @desc [MS-XLS] 2.5.143 FtCmo
@@ -43,8 +43,8 @@ function parseFtArray(blob: CustomCFB$Blob, length: number) {
  * @returns
  */
 
-export function parseObj(blob: CustomCFB$Blob, length: number, options?: any) {
-  // if(options && options.biff < 8) return parseBIFF5Obj(blob, length, options);
+export function parseObj(blob: CustomCFB$Blob, length: number, options?: ParseFuncOptions) {
+  // if(options && options.biffVer < 8) return parseBIFF5Obj(blob, length, options);
   const cmo = parseFtCmo(blob, 22); // id, ot, flags
   // const fts = parseFtArray(blob, length-22, cmo.ot);
   const fts = parseFtArray(blob, length - 22);

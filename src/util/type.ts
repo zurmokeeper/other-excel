@@ -3,7 +3,10 @@ export type CustomCFB$Blob = XLSXCFB$Blob & {l: number, read_shift(num: number, 
 
 export type Options = {
 	type?: 'base64' | 'buffer' | 'stream';
-	biff?: 2 | 3 | 4 | 5 | 8;
+}
+
+export interface ParseFuncOptions extends Options {
+    biffVer?: 2 | 3 | 4 | 5 | 8 | 12;
 }
 
 export type CellValueType = 'string' | 'date' | 'hyperlink' | 'number';

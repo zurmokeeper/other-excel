@@ -1,4 +1,4 @@
-import { CustomCFB$Blob } from '../../../util/type';
+import { CustomCFB$Blob, ParseFuncOptions } from '../../../util/type';
 import { parseUInt16, parseXLUnicodeStringNoCch } from '../../../util/charsetParseUtil';
 
 /**
@@ -9,7 +9,7 @@ import { parseUInt16, parseXLUnicodeStringNoCch } from '../../../util/charsetPar
  * @param length
  * @returns
  */
-function parseControlInfo(blob: CustomCFB$Blob, length: number, options?: any) {
+function parseControlInfo(blob: CustomCFB$Blob, length: number, options?: ParseFuncOptions) {
   const flags = blob.read_shift(1);
   blob.l++;
   const accel = blob.read_shift(2);
@@ -27,7 +27,7 @@ function parseControlInfo(blob: CustomCFB$Blob, length: number, options?: any) {
  * @param length
  * @returns
  */
-export function parseTxO(blob: CustomCFB$Blob, length: number, options?: any) {
+export function parseTxO(blob: CustomCFB$Blob, length: number, options?: ParseFuncOptions) {
   const position = blob.l;
   let texts = '';
   try {

@@ -2,9 +2,9 @@
  * @author zurmokeeper
  * @time 2024-03-16
  */
-import * as fs from 'fs';
 // import * as CFB from 'cfb';
 import XLSX from 'xlsx';
+import * as fs from 'fs';
 import WorkBook from './workbook';
 import { Parse } from './lib/xls/parse';
 import { Options } from './util/type';
@@ -47,8 +47,6 @@ class Excel {
     }
     const cfb = CFB.read(buffer, { type: 'buffer' });
     const Workbook = CFB.find(cfb, '/Workbook') || CFB.find(cfb, '/Book');
-    // const cfb = XLSX.CFB.read(buffer, {type: 'buffer'});
-    // const Workbook = XLSX.CFB.find(cfb, '/Workbook') || XLSX.CFB.find(cfb, '/Book');
     if (!Workbook) {
       throw new Error('Unsupported file type!');
     }
@@ -59,12 +57,13 @@ class Excel {
     return this.workbook;
   }
 
-  getWorksheetNames() {
-    if (!this.workbook) {
-      throw new Error('Workbook is not loaded. Call read() first.');
-    }
-    return this.workbook.sheetNames;
-  }
+  // TODO:
+  // getWorksheetNames() {
+  //   if (!this.workbook) {
+  //     throw new Error('Workbook is not loaded. Call read() first.');
+  //   }
+  //   return this.workbook.sheetNames;
+  // }
 }
 
 export default Excel;

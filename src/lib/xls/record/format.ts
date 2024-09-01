@@ -1,4 +1,4 @@
-import { CustomCFB$Blob } from '../../../util/type';
+import { CustomCFB$Blob, ParseFuncOptions } from '../../../util/type';
 import { parseXLUnicodeString2 } from '../../../util/charsetParseUtil';
 
 /**
@@ -8,7 +8,7 @@ import { parseXLUnicodeString2 } from '../../../util/charsetParseUtil';
  * @returns
  */
 
-export function parseFormat(blob: CustomCFB$Blob, length: number, options?: any) {
+export function parseFormat(blob: CustomCFB$Blob, length: number, options?: ParseFuncOptions) {
   const numFmtId = blob.read_shift(2); // ifmt
   const fmtstr = parseXLUnicodeString2(blob, 0, options); // stFormat
   return { numFmtId: numFmtId, fmtstr };

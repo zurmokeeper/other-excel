@@ -1,4 +1,4 @@
-import { CustomCFB$Blob } from '../../../util/type';
+import { CustomCFB$Blob, ParseFuncOptions } from '../../../util/type';
 import { parseXLUnicodeString2 } from '../../../util/charsetParseUtil';
 import { getBit } from '../../../util/index';
 
@@ -10,7 +10,7 @@ import { getBit } from '../../../util/index';
  * @returns
  */
 function parseNoteSh(blob: CustomCFB$Blob, length: number, options?: any) {
-  // if (options?.biff < 8) return;
+  // if (options?.biffVer < 8) return;
   const row = blob.read_shift(2);
   const col = blob.read_shift(2);
   const buffer = blob.read_shift(2);
@@ -21,7 +21,7 @@ function parseNoteSh(blob: CustomCFB$Blob, length: number, options?: any) {
 
   const idObj = blob.read_shift(2);
   const stAuthor = parseXLUnicodeString2(blob, 0, options);
-  if (options?.biff < 8) blob.read_shift(1);
+  if (options?.biffVer < 8) blob.read_shift(1);
   // return [{r:row,c:col}, stAuthor, idObj, flags];
   return {
     cell: { row: row, col: col }, stAuthor, idObj, fShow, fRwHidden, fColHidden,
@@ -37,7 +37,7 @@ function parseNoteSh(blob: CustomCFB$Blob, length: number, options?: any) {
  * @returns
  */
 
-export function parseNote(blob: CustomCFB$Blob, length: number, options?: any) {
+export function parseNote(blob: CustomCFB$Blob, length: number, options?: ParseFuncOptions) {
   const output = parseNoteSh(blob, length, options);
   return output;
 }

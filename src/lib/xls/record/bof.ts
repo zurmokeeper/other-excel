@@ -1,5 +1,19 @@
 import { CustomCFB$Blob } from '../../../util/type';
 
+type BIFFType = {
+  [key: number]: number
+}
+
+const BIFF: BIFFType = {
+  1536: 8,
+  1280: 5,
+  1024: 4,
+  768: 3,
+  512: 2,
+  2: 2,
+  7: 2,
+};
+
 /**
  * @desc [MS-XLS] 2.4.21 BOF
  * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/4d6a3d1e-d7c5-405f-bbae-d01e9cb79366
@@ -31,6 +45,7 @@ export function parseBOF(blob: CustomCFB$Blob, length: number) {
     default: if (length > 6) throw new Error(`Unexpected BIFF Ver ${output.BIFFVer}`);
   }
 
+  output.BIFFVer = BIFF[output.BIFFVer];
   blob.read_shift(length);
   return output;
 }

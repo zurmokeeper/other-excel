@@ -586,22 +586,3 @@ export interface CellObject {
  * b Boolean, n Number, e error, s String, d Date, z Stub
  */
 export type ExcelDataType = 'b' | 'n' | 'e' | 's' | 'd' | 'z';
-
- opts: {
-    Date1904: false,
-    CalcPrecision: true,
-    RefreshAll: false,
-
-  这3个才是book的
-
- opts: {
-    Date1904: false,
-    CalcPrecision: true,
-    RefreshAll: false,
-    CalcMode: 1,
-    CalcCount: 100,
-    CalcIter: false,
-    CalcDelta: 0.001,
-    CalcSaveRecalc: true
-    CalcRefMode
-  },

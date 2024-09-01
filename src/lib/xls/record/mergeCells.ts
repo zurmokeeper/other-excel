@@ -1,4 +1,4 @@
-import { CustomCFB$Blob } from '../../../util/type';
+import { CustomCFB$Blob, ParseFuncOptions } from '../../../util/type';
 
 function parseRef8U(blob: CustomCFB$Blob, length: number) {
   const rwFirst = blob.read_shift(2);
@@ -17,7 +17,7 @@ function parseRef8U(blob: CustomCFB$Blob, length: number) {
  * @returns
  */
 
-export function parseMergeCells(blob: CustomCFB$Blob, length: number, options?: any) {
+export function parseMergeCells(blob: CustomCFB$Blob, length: number, options?: ParseFuncOptions) {
   const merges = [];
   let cmcs = blob.read_shift(2);
   while (cmcs--) {

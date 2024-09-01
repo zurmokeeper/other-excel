@@ -1,4 +1,4 @@
-import { CustomCFB$Blob } from './type';
+import { CustomCFB$Blob, ParseFuncOptions } from './type';
 
 let currentCodepage = 1200;
 
@@ -15,19 +15,19 @@ let currentCodepage = 1200;
  * @returns
  */
 export function parseShortXLUnicodeString(blob: CustomCFB$Blob, length: number, options?: any) {
-  const cch = blob.read_shift(options && options.biff >= 12 ? 2 : 1); // cch -> count of characters
+  const cch = blob.read_shift(options && options.biffVer >= 12 ? 2 : 1); // cch -> count of characters
   let encoding = 'sbcs-cont';
   const codepage = currentCodepage;
-  if (options && options.biff >= 8) currentCodepage = 1200;
-  if (!options || options.biff === 8) {
+  if (options && options.biffVer >= 8) currentCodepage = 1200;
+  if (!options || options.biffVer === 8) {
     const fHighByte = blob.read_shift(1);
     if (fHighByte) {
       encoding = 'dbcs-cont';
     }
-  } else if (options.biff === 12) {
+  } else if (options.biffVer === 12) {
     encoding = 'wstr';
   }
-  if (options && options.biff >= 2 && options.biff <= 5) encoding = 'cpstr';
+  if (options && options.biffVer >= 2 && options.biffVer <= 5) encoding = 'cpstr';
 
   let str = '';
   if (cch) {
@@ -84,8 +84,8 @@ export function parseXLUnicodeRichExtendedString(blob: CustomCFB$Blob) {
 export function parseXLUnicodeStringNoCch(blob: CustomCFB$Blob, cch: number, options?: any) {
   let retval;
   if (options) {
-    if (options.biff >= 2 && options.biff <= 5) return blob.read_shift(cch, 'cpstr');
-    if (options.biff >= 12) return blob.read_shift(cch, 'dbcs-cont');
+    if (options.biffVer >= 2 && options.biffVer <= 5) return blob.read_shift(cch, 'cpstr');
+    if (options.biffVer >= 12) return blob.read_shift(cch, 'dbcs-cont');
   }
   const fHighByte = blob.read_shift(1);
   if (fHighByte === 0) {
@@ -103,9 +103,9 @@ export function parseXLUnicodeStringNoCch(blob: CustomCFB$Blob, cch: number, opt
  * @param options
  * @returns
  */
-function parseXLUnicodeString(blob: CustomCFB$Blob, length: number, options?: any) {
+function parseXLUnicodeString(blob: CustomCFB$Blob, length: number, options?: ParseFuncOptions) {
   // const cch = blob.read_shift(2);
-  const cch = blob.read_shift(options && options.biff === 2 ? 1 : 2);
+  const cch = blob.read_shift(options && options.biffVer === 2 ? 1 : 2);
   if (cch === 0) {
     blob.l++;
     return '';
@@ -113,15 +113,15 @@ function parseXLUnicodeString(blob: CustomCFB$Blob, length: number, options?: an
   return parseXLUnicodeStringNoCch(blob, cch, options);
 }
 /* BIFF5 override */
-export function parseXLUnicodeString2(blob: CustomCFB$Blob, length: number, options?: any) {
+export function parseXLUnicodeString2(blob: CustomCFB$Blob, length: number, options?: ParseFuncOptions) {
   return parseXLUnicodeString(blob, length);
-  // if(options.biff > 5) return parseXLUnicodeString(blob, length, options);
+  // if(options.biffVer > 5) return parseXLUnicodeString(blob, length, options);
   // const cch = blob.read_shift(1);
   // if(cch === 0) {
   //     blob.l++;
   //     return "";
   // }
-  // return blob.read_shift(cch, (options.biff <= 4 || !blob.lens ) ? 'cpstr' : 'sbcs-cont');
+  // return blob.read_shift(cch, (options.biffVer <= 4 || !blob.lens ) ? 'cpstr' : 'sbcs-cont');
 }
 
 export function parseRef8U(blob: CustomCFB$Blob, length: number) {

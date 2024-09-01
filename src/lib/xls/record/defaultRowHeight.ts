@@ -1,4 +1,4 @@
-import { CustomCFB$Blob } from '../../../util/type';
+import { CustomCFB$Blob, ParseFuncOptions } from '../../../util/type';
 
 /**
  * @desc [MS-XLS] 2.4.87 DefaultRowHeight
@@ -6,13 +6,13 @@ import { CustomCFB$Blob } from '../../../util/type';
  * @returns
  */
 
-export function parseDefaultRowHeight(blob: CustomCFB$Blob, length: number, options?: any) {
+export function parseDefaultRowHeight(blob: CustomCFB$Blob, length: number, options?: ParseFuncOptions) {
   let f = 0;
-  if (!(options && options.biff === 2)) {
+  if (!(options && options.biffVer === 2)) {
     f = blob.read_shift(2);
   }
   let miyRw = blob.read_shift(2);
-  if ((options && options.biff === 2)) {
+  if ((options && options.biffVer === 2)) {
     f = 1 - (miyRw >> 15);
     miyRw &= 0x7fff;
   }
