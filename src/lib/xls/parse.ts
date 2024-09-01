@@ -257,7 +257,7 @@ export class Parse {
             this.workbook.sst = value;
             break;
           case XLSRECORDNAME.ExtSST:
-            console.log('ExtSST-->', value);
+            // console.log('ExtSST-->', value);
             break;
           case XLSRECORDNAME.BOF:
             fileDepth++;
@@ -274,7 +274,7 @@ export class Parse {
 
             break;
           case XLSRECORDNAME.Index:
-            console.log('Index-->', JSON.stringify(value));
+            // console.log('Index-->', JSON.stringify(value));
             if (currWorksheetInst) {
               // currWorksheetInst.index = value;
             }
@@ -320,7 +320,7 @@ export class Parse {
             }
             break;
           case XLSRECORDNAME.ColInfo:
-            console.log('ColInfo-->', JSON.stringify(value));
+            // console.log('ColInfo-->', JSON.stringify(value));
             // this.workbook.sst = value
             break;
           case XLSRECORDNAME.Dimensions:
@@ -329,7 +329,7 @@ export class Parse {
             }
             break;
           case XLSRECORDNAME.Row:
-            console.log('Row-->', JSON.stringify(value));
+            // console.log('Row-->', JSON.stringify(value));
             if (currWorksheetInst) {
               currWorksheetInst.actualRowCount++;
             }
@@ -356,23 +356,23 @@ export class Parse {
             currWorksheetInst?.cells.push(tempCell);
             break;
           case XLSRECORDNAME.MulBlank:
-            console.log('MulBlank-->', value);
+            // console.log('MulBlank-->', value);
             break;
           case XLSRECORDNAME.Blank:
-            console.log('Blank-->', value);
+            // console.log('Blank-->', value);
             // this.workbook.sst = value
             break;
           case XLSRECORDNAME.DBCell:
-            console.log('DBCell-->', value);
+            // console.log('DBCell-->', value);
             break;
           case XLSRECORDNAME.Obj:
-            console.log('Obj-->', JSON.stringify(value));
+            // console.log('Obj-->', JSON.stringify(value));
             break;
           case XLSRECORDNAME.TxO:
-            console.log('TxO-->', value);
+            // console.log('TxO-->', value);
             break;
           case XLSRECORDNAME.Note:
-            console.log('Note-->', JSON.stringify(value));
+            // console.log('Note-->', JSON.stringify(value));
             // this.workbook.sst = value
             break;
           case XLSRECORDNAME.MergeCells:
@@ -381,7 +381,7 @@ export class Parse {
             }
             break;
           case XLSRECORDNAME.HLink:
-            console.log('HLink-->', JSON.stringify(value));
+            // console.log('HLink-->', JSON.stringify(value));
             break;
           case XLSRECORDNAME.EOF:
             if (--fileDepth) break; // 出栈，第一对 BOF EOF 读完了

@@ -148,12 +148,12 @@ class WorkSheet {
 
   // getCell(1,1) or getCell(A1)
   getCell(row: number | string, col?: number): Cell | undefined {
-    console.log('xxxx', this.name);
-    console.log('xxxx', this.labelSsts);
-    console.log('rks', this.rks);
-    console.log('mergeCells', JSON.stringify(this.mergeCells));
+    // console.log('xxxx', this.name);
+    // console.log('xxxx', this.labelSsts);
+    // console.log('rks', this.rks);
+    // console.log('mergeCells', JSON.stringify(this.mergeCells));
 
-    console.log('cells', this.cells);
+    // console.log('cells', this.cells);
 
     let realRow = row;
     let realCol = 0;

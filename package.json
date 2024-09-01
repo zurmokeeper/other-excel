@@ -10,24 +10,33 @@
 		"cfb",
 		"office",
 		"ole",
-		"Jest"
+		"jest",
+		"otherExcelJS"
 	],
 	"private": false,
 	"license": "MIT",
 	"author": "zurmokeeper",
-	"main": "dist/index.js",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git@github.com/zurmokeeper/other-excel"
+	},
 	"scripts": {
-		"start": "node index.js",
+		"start": "node dist/index.js",
 		"lint-staged": "pnpm dlx lint-staged",
 		"lint": "eslint --ext .js",
 		"test": "jest",
+		"build": "tsc",
 		"coverage": "jest --coverage",
 		"tsx": "tsx src/test.ts"
 	},
 	"dependencies": {
 		"lodash": "^4.17.21",
-		"xlsx": "^0.18.5",
-		"zod": "^3.23.8"
+		"xlsx": "^0.18.5"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.9.0",

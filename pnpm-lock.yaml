@@ -22,12 +22,10 @@ specifiers:
   typescript: ^5.5.4
   typescript-eslint: ^8.1.0
   xlsx: ^0.18.5
-  zod: ^3.23.8
 
 dependencies:
   lodash: 4.17.21
   xlsx: 0.18.5
-  zod: 3.23.8
 
 devDependencies:
   '@eslint/js': 9.9.0
@@ -4695,7 +4693,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  /zod/3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
-    dev: false
