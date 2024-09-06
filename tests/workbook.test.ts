@@ -20,12 +20,6 @@ describe('WorkBook', () => {
     // expect(cell).toEqual(expectData);
   });
 
-  it('new WorkBook().getWorksheet: The parameter is number,  success. sheetNames is [\'Sheet1\', \'Sheet2\', \'Sheet3\']', async () => {
-    const sheetNames = workbook.sheetNames;
-    const expectData = ['Sheet1', 'Sheet2', 'Sheet3'];
-    expect(sheetNames).toEqual(expectData);
-  });
-
   it('new WorkBook().getWorksheet: Worksheet at index id not found.', async () => {
     const id = 3;
     const test = function test() {
@@ -62,5 +56,11 @@ describe('WorkBook', () => {
   it('new WorkBook().getWorksheet: The parameter is string,  success.', async () => {
     const worksheet = workbook.getWorksheet('Sheet1');
     // expect(cell).toEqual(expectData);
+  });
+
+  it('new WorkBook().sheetNames: success. sheetNames is [\'Sheet1\', \'Sheet2\', \'Sheet3\']', async () => {
+    const sheetNames = workbook.sheetNames;
+    const expectData = ['Sheet1', 'Sheet2', 'Sheet3'];
+    expect(sheetNames).toEqual(expectData);
   });
 });

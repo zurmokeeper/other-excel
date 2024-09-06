@@ -586,3 +586,51 @@ export interface CellObject {
  * b Boolean, n Number, e error, s String, d Date, z Stub
  */
 export type ExcelDataType = 'b' | 'n' | 'e' | 's' | 'd' | 'z';
+
+https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/ca4c1748-8729-4a93-abb9-4602b3a01fb1
+
+
+下个版本新功能：
+1：支持导出esm版本，支持esm能用
+2：完成 actualColumnCount 属性的功能
+3：新增导出报错xls文件的功能
+
+
+workbookcontent
+必填  BOF INTERFACE(InterfaceHdr Mms InterfaceEnd) WriteAccess CodePage
+
+DSF RRTabId PROTECTION (WinProtect Protect Password Prot4Rev Prot4RevPass)
+
+1*Window1 Backup HideObj Date1904 CalcPrecision RefreshAll BookBool 
+
+FORMATTING()  UsesELFs  1* BoundSheet8 METADATA???  Country SUPBOOK??
+
+SHAREDSTRINGS(SST)  ExtSST 
+
+EOF
+
+Worksheet
+
+https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/f41c06f2-9057-49a1-8c3f-a4a4d211fc56
+
+https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/a1b3d8b4-7442-41fd-9c57-bbd2a6394082
+
+GLOBALS 在这里
+
+必填  BOF  Index
+
+ CalcMode CalcCount CalcRefMode CalcIter CalcDelta CalcSaveRecalc PrintRowCol PrintGrid GridSet Guts DefaultRowHeight WsBool
+
+ PAGESETUP = Header Footer HCenter VCenter [LeftMargin] [RightMargin] [TopMargin] [BottomMargin] [Pls *Continue] Setup
+
+ COLUMNS = DefColWidth *255ColInfo
+
+ Dimensions  [CELLTABLE] 1*(1*Row *CELL 1*DBCell)（要做，不然哪里有内容）
+
+ CELL = FORMULA / Blank / MulBlank / RK / MulRk / BoolErr / Number / LabelSst
+
+ WINDOW = Window2 [PLV] [Scl] [Pane] *Selection
+
+ FEAT = FeatHdr *(Feat *ContinueFrt)
+
+ EOF

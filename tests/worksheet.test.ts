@@ -584,4 +584,11 @@ describe('WorkSheet', () => {
     ];
     expect(cols).toEqual(expectData);
   });
+
+  it('new WorkSheet().actualRowCount: success. actualRowCount is 9', async () => {
+    const worksheet = workbook.getWorksheet(0);
+    const actualRowCount = worksheet.actualRowCount;
+    const expectData = 9;
+    expect(actualRowCount).toEqual(expectData);
+  });
 });

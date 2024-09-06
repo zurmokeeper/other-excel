@@ -146,7 +146,7 @@ class WorkSheet {
     return rangeCellList;
   }
 
-  // getCell(1,1) or getCell(A1)
+  // getCell(1,1) or getCell('A1')
   getCell(row: number | string, col?: number): Cell | undefined {
     // console.log('xxxx', this.name);
     // console.log('xxxx', this.labelSsts);

@@ -37,7 +37,6 @@ use commonjs:
 
 const OtherExcel = require('other-excel').default;
 
-//decrypt a file with a password
 (async ()=>{
         const otherExcel = new OtherExcel();
         const workbook = await otherExcel.read('./test.xls');
@@ -67,6 +66,9 @@ const OtherExcel = require('other-excel').default;
         Get the contents of a cell directly:
         const cell = worksheet.getCell('A1');
         const cell = worksheet.getCell(0, 0);
+
+        Get the total number of rows on the worksheet that actually have cell data.
+        worksheet.actualRowCount
 
         There are many more attributes that can be viewed directly in the .d.ts declaration file...
 
