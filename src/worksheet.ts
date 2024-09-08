@@ -3,7 +3,7 @@ import { decodeCell } from './util/index';
 // import { getRowsSchema } from './util/schema';
 import { MAX_ROW_NUM, MAX_COL_NUM } from './util/enum';
 import {
-  Cell, Row, Column, Range,
+  Cell, Row, Column, Range, Header,
 } from './util/type';
 
 type Options = {
@@ -31,6 +31,8 @@ class WorkSheet {
   actualRowCount: number;
   actualColumnCount: number;
 
+  columns: Array<Header>;
+
   constructor(options: Options) {
     this.index = 0;
     this.name = options.name;
@@ -51,6 +53,8 @@ class WorkSheet {
 
     this.actualRowCount = 0;
     this.actualColumnCount = 0;
+
+    this.columns = [];
   }
 
   getRow(index: number): Row {
@@ -66,6 +70,9 @@ class WorkSheet {
     const sortCellList = orderBy(filterCellList, 'col', 'asc');
     row = { number: index, values: sortCellList };
     return row;
+  }
+
+  addRow(data: any[]): Row {
   }
 
   getRows(start: number, end: number): Row[] {

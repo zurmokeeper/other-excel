@@ -20,8 +20,8 @@ async function name() {
 
   // }
 //   const workbook1 = await otherExcel.read('./tests/xxxxxx/test1-merge.xls');
-  const workbook1 = await otherExcel.read('./tests/test1-merge.xls');
-  // const workbook1 = await otherExcel.read('../tests/test1.xls') //直接ts-node 用 在src下用
+  // const workbook1 = await otherExcel.read('./tests/test1-merge.xls');
+  const workbook1 = await otherExcel.read('./tests/test1.xls') //直接ts-node 用 在src下用
   // const workbook1 = await otherExcel.read('./tests/test1.xls') //直接ts-node 用 在项目目录下 和 tsc
   // console.log('0------->xf', JSON.stringify(workbook1.xfs) )
 
@@ -35,9 +35,9 @@ async function name() {
   // workbook1.setWorksheet()
   // console.log('workbook1', workbook1);
   console.log('workbook1', workbook1.sheetNames);
-  const worksheet = workbook1.getWorksheet('xx');
-//   // console.log('worksheet', worksheet)
-//   const cell = worksheet.getCell('A3');
+  const worksheet = workbook1.getWorksheet(0);
+  // console.log('worksheet', worksheet)
+  const cell = worksheet.getCell('A3');
 //   console.log('cell', cell);
 
 //   const worksheet1 = workbook1.getWorksheet(1);
@@ -57,8 +57,16 @@ async function name() {
   // const col = worksheet.getColumn('xx')
   // console.log('row', JSON.stringify(col) )
 
-  const cols = worksheet.getColumns(4, 5)
-  console.log('cols', JSON.stringify(cols) )
+  const cols = worksheet.getColumns(4, 5);
+  console.log('cols', JSON.stringify(cols));
+
+  const newWorkBook = otherExcel.buildWorkBook();
+  const newWorksheet = newWorkBook.addWorksheet('name');
+  newWorksheet.columns = [];
+  // newWorksheet.addRow();
+  // newWorksheet.addRows();
+  // const buffer = await otherExcel.writeBuffer();
+  // const buffer = await otherExcel.write('');
 }
 
 name();

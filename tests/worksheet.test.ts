@@ -591,4 +591,60 @@ describe('WorkSheet', () => {
     const expectData = 9;
     expect(actualRowCount).toEqual(expectData);
   });
+
+  it('new WorkSheet().dimensions: success.', async () => {
+    const worksheet = workbook.getWorksheet(0);
+    const dimensions = worksheet.dimensions;
+    const expectData = { start: { row: 2, col: 0 }, end: { row: 14, col: 6 } };
+    expect(dimensions).toEqual(expectData);
+  });
+
+  it('new WorkSheet().mergeCells: success. mergeCells is 9', async () => {
+    const worksheet = workbook.getWorksheet(0);
+    const mergeCells = worksheet.mergeCells;
+    const expectData = 9;
+    expect(mergeCells).toEqual(expectData);
+  });
+
+  it('new WorkSheet().calcMode: success. calcMode is 1', async () => {
+    const worksheet = workbook.getWorksheet(0);
+    const calcMode = worksheet.calcMode;
+    const expectData = 1;
+    expect(calcMode).toEqual(expectData);
+  });
+
+  it('new WorkSheet().calcCount: success. calcCount is 100', async () => {
+    const worksheet = workbook.getWorksheet(0);
+    const calcCount = worksheet.calcCount;
+    const expectData = 100;
+    expect(calcCount).toEqual(expectData);
+  });
+
+  it('new WorkSheet().calcIter: success. calcIter is false', async () => {
+    const worksheet = workbook.getWorksheet(0);
+    const calcIter = worksheet.calcIter;
+    const expectData = false;
+    expect(calcIter).toEqual(expectData);
+  });
+
+  it('new WorkSheet().calcDelta: success. calcDelta is 0.001', async () => {
+    const worksheet = workbook.getWorksheet(0);
+    const calcDelta = worksheet.calcDelta;
+    const expectData = 0.001;
+    expect(calcDelta).toEqual(expectData);
+  });
+
+  it('new WorkSheet().calcSaveRecalc: success. calcSaveRecalc is true', async () => {
+    const worksheet = workbook.getWorksheet(0);
+    const calcSaveRecalc = worksheet.calcSaveRecalc;
+    const expectData = true;
+    expect(calcSaveRecalc).toEqual(expectData);
+  });
+
+  it('new WorkSheet().calcRefMode: success. calcRefMode is true', async () => {
+    const worksheet = workbook.getWorksheet(0);
+    const calcRefMode = worksheet.calcRefMode;
+    const expectData = true;
+    expect(calcRefMode).toEqual(expectData);
+  });
 });

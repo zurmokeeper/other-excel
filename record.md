@@ -634,3 +634,36 @@ GLOBALS 在这里
  FEAT = FeatHdr *(Feat *ContinueFrt)
 
  EOF
+
+ 	"module": "./dist/index.mjs",
+	"exports": {
+		".": {
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js"
+		}
+	},
+
+  const generateExcel = async (...args)=>{
+  const [dataList] = args;
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('My Sheet'); // My Sheet 是 sheet 的名字
+
+  // 下面是表头 key 对应的数据源的key  width 是单元格的宽度
+  worksheet.columns = [
+    {header: '随工单号', key: 'docNo', width: 10},
+    {header: '零件编码', key: 'cInvCode', width: 10},
+    {header: '处理过程', key: 'process', width: 10},
+    {header: '生产炉号', key: 'equipmentCode', width: 10},
+    {header: '硬度要求', key: 'hardness', width: 10},
+    {header: '检测硬度计编码', key: 'testDurometerCode', width: 20},
+    {header: '硬度测试结果', key: 'hardnessTestResult', width: 20},
+    {header: '备注', key: 'remark', width: 10},
+    {header: '判定', key: 'result', width: 10},
+    {header: '废品数', key: 'wasteNum', width: 10},
+  ];
+  worksheet.addRows(dataList); // 把值对应填的单元格里   dataList 是一个数据数组
+  const buffer = await workbook.xlsx.writeBuffer(); // 生成一个excel文件对应的buffer
+  // await workbook.xlsx.writeFile('test1.xlsx');   // 直接生成一个excel文件，可以本地查看，会生成在项目根目录下
+  return buffer;
+};

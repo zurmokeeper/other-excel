@@ -1,5 +1,5 @@
 import { parseBoundSheet8 } from './boundSheet';
-import { parseBOF } from './bof';
+import { parseBOF, writeBOF } from './bof';
 import { parseSST } from './sst';
 import { parseCountry } from './country';
 import { parseDimensions } from './dimensions';
@@ -23,6 +23,7 @@ import { parseTxO } from './txO';
 import { parseColInfo } from './colInfo';
 import { parseMulBlank } from './mulBlank';
 import { parseXFExt } from './xfExt';
+import { parseWindow1 } from './window1';
 
 import { CustomCFB$Blob } from '../../../util/type';
 
@@ -90,4 +91,7 @@ export {
   parseXnum,
   parseIndex,
   parseXFExt,
+  parseWindow1,
+
+  writeBOF,
 };

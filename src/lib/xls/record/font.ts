@@ -1,7 +1,9 @@
+import XLSX from 'xlsx';
 import { parseShortXLUnicodeString } from '../../../util/charsetParseUtil';
 import { getBit } from '../../../util/index';
 import { CustomCFB$Blob } from '../../../util/type';
 
+const { CFB } = XLSX;
 /**
  * @desc [MS-XLS] 2.4.122 Font
  *
@@ -9,7 +11,7 @@ import { CustomCFB$Blob } from '../../../util/type';
  *
  * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/291a910c-cb69-4799-875e-a201845d4fd1
  * @param blob
- * @param length
+ * @param length 20
  * @returns
  */
 export function parseFont(blob: CustomCFB$Blob, length: number) {
@@ -47,4 +49,20 @@ export function parseFont(blob: CustomCFB$Blob, length: number) {
     uls,
     bCharSet,
   };
+}
+
+export function writeFont(options: any) {
+  const size = 12;
+  const name = 'Arial';
+  const newBlob = Buffer.alloc(size) as CustomCFB$Blob;
+  CFB.utils.prep_blob(newBlob, 0);
+  newBlob.write_shift(2, size * 20);
+  newBlob.write_shift(4, 0); // fHighByte 0x0
+  newBlob.write_shift(2, 400);
+  newBlob.write_shift(4, 0);
+  newBlob.write_shift(2, 0);
+  newBlob.write_shift(1, name.length);
+  newBlob.write_shift(1, 1);
+  newBlob.write_shift(2 * name.length, name, 'utf16le');
+  return newBlob;
 }

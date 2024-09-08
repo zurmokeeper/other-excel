@@ -1,5 +1,8 @@
+import XLSX from 'xlsx';
 import { CustomCFB$Blob } from '../../../util/type';
 import { getBit, getBitSlice } from '../../../util/index';
+
+const { CFB } = XLSX;
 
 /**
  * @desc [MS-XLS] 2.4.353 XF
@@ -235,4 +238,19 @@ function parseCellStyleXF(blob: CustomCFB$Blob, length: number, style: number, o
   return {
     alignment, border,
   };
+}
+
+export function writeXF(data: any, options?: any) {
+  const size = 20;
+  const newBlob = Buffer.alloc(size) as CustomCFB$Blob;
+  CFB.utils.prep_blob(newBlob, 0);
+  newBlob.write_shift(2, 0);
+  newBlob.write_shift(2, (data.numFmtId || 0));
+  newBlob.write_shift(2, (ixfeP<<4));
+
+  newBlob.write_shift(4, 0);
+  newBlob.write_shift(4, 0);
+  newBlob.write_shift(4, 0);
+  newBlob.write_shift(2, 0);
+  return newBlob;
 }

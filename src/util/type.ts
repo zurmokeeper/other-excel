@@ -1,5 +1,10 @@
 type XLSXCFB$Blob = number[] | Uint8Array | Buffer
-export type CustomCFB$Blob = XLSXCFB$Blob & {l: number, read_shift(num: number, encoding?: string): any, continuePartDataLens: number[]}
+export type CustomCFB$Blob = XLSXCFB$Blob & {
+	l: number,
+	read_shift(num: number, encoding?: string): any,
+	continuePartDataLens: number[],
+	write_shift(byteLength: number, value: number | string, encoding?: string): void
+}
 
 export type Options = {
 	type?: 'base64' | 'buffer' | 'stream';
@@ -63,6 +68,11 @@ export interface Range {
         col: number;
         row: number;
     }
+}
+
+export interface Header {
+    header: string;
+    key: string;
 }
 
 export type FillPatterns =

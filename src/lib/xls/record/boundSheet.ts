@@ -31,3 +31,17 @@ export function parseBoundSheet8(blob: CustomCFB$Blob, length: number, options: 
     sheetName: stName,
   };
 }
+
+export function writeBoundSheet8(data: any, opts: any) {
+  const width = 2;
+  const newBlob = Buffer.alloc(8 + width * data.sheetName.length) as CustomCFB$Blob;
+  newBlob.write_shift(4, data.pos);
+  newBlob.write_shift(1, data.hiddenState || 0);
+  newBlob.write_shift(1, data.dt);
+  newBlob.write_shift(1, data.sheetName.length);
+  newBlob.write_shift(1, 1); // fHighByte
+  newBlob.write_shift(width * data.sheetName.length, data.sheetName, opts.biff < 8 ? 'sbcs' : 'utf16le'); // 为什么不是 encoding = 'dbcs-cont';
+  const out = newBlob.slice(0, newBlob.l) as CustomCFB$Blob;
+  out.l = newBlob.l;
+  return out;
+}

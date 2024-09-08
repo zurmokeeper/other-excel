@@ -64,6 +64,16 @@ class Excel {
   //   }
   //   return this.workbook.sheetNames;
   // }
+
+  buildWorkBook() {
+    return this.workbook;
+  }
+
+  async write(path: string) {
+    const parse = new Parse(this.workbook);
+    const content = parse.write();
+    await fs.promises.writeFile(path, content);
+  }
 }
 
 export default Excel;

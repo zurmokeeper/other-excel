@@ -59,6 +59,12 @@ class WorkBook {
     this.worksheet[value.sheetName] = new WorkSheet({ name: value.sheetName });
     return this.worksheet[value.sheetName];
   }
+
+  addWorksheet(name: string): WorkSheet {
+    this.sheetNames.push(name);
+    this.worksheet[name] = new WorkSheet({ name: name });
+    return this.worksheet[name];
+  }
 }
 
 export default WorkBook;

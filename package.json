@@ -34,8 +34,16 @@
 		"lint": "eslint --ext .js",
 		"test": "jest",
 		"build": "tsc",
+		"mbuild": "microbundle --format cjs,esm",
 		"coverage": "jest --coverage",
 		"tsx": "tsx src/test.ts"
+	},
+	"microbundle": {
+		"format": [
+			"cjs",
+			"esm"
+		],
+		"tsconfig": "tsconfig.json"
 	},
 	"dependencies": {
 		"lodash": "^4.17.21",
@@ -57,6 +65,7 @@
 		"eslint-config-airbnb-base": "^15.0.0",
 		"eslint-plugin-import": "^2.29.1",
 		"jest": "^29.7.0",
+		"microbundle": "^0.15.1",
 		"ts-jest": "^29.2.4",
 		"tsx": "^4.19.0",
 		"typescript": "^5.5.4",

@@ -1,4 +1,7 @@
+import XLSX from 'xlsx';
 import { CustomCFB$Blob } from '../../../util/type';
+
+const { CFB } = XLSX;
 
 type BIFFType = {
   [key: number]: number
@@ -17,8 +20,35 @@ const BIFF: BIFFType = {
 /**
  * @desc [MS-XLS] 2.4.21 BOF
  * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/4d6a3d1e-d7c5-405f-bbae-d01e9cb79366
+ *
+ * [2057, 16, record]  0x0809->2057
+ *
+ * vers 2Byte BIFF version
+ * dt  2Byte
+ * rupBuild  2Byte
+ * rupYear  2Byte
+ *
+ * fWin 1bit
+ * fRisc 1bit
+ * fBeta 1bit
+ * fWinAny 1bit
+ * fMacAny 1bit
+ * fBetaAny 1bit
+ * unused1 2bit
+ * fRiscAny 1bit
+ * fOOM  1bit
+ * fGlJmp 1bit
+ * unused2 2bit
+ * fFontLimit  1bit
+ * verXLHigh 4bit
+ * unused3  1bit
+ * reserved1 13bit
+ * verLowestBiff  8bit  The value MUST be 6.
+ * verLastXLSaved  4 bits
+ * reserved2 20 bits
+ *
  * @param blob
- * @param length
+ * @param length 16 Byte
  * @returns
  */
 export function parseBOF(blob: CustomCFB$Blob, length: number) {
@@ -48,4 +78,31 @@ export function parseBOF(blob: CustomCFB$Blob, length: number) {
   output.BIFFVer = BIFF[output.BIFFVer];
   blob.read_shift(length);
   return output;
+}
+
+export function writeBOF(wb: any, t: number, o: any) {
+  let header = 0x0600;
+  let size = 16;
+  switch (o.type) {
+    case 'biff8': break;
+    case 'biff5': header = 0x0500; size = 8; break;
+    case 'biff4': header = 0x0004; size = 6; break;
+    case 'biff3': header = 0x0003; size = 6; break;
+    case 'biff2': header = 0x0002; size = 4; break;
+    case 'xla': break;
+    default: throw new Error('unsupported BIFF version');
+  }
+  const newBlob = Buffer.alloc(size) as CustomCFB$Blob;
+  CFB.utils.prep_blob(newBlob, 0);
+  newBlob.write_shift(2, header);
+  newBlob.write_shift(2, t);
+  if (size > 4) newBlob.write_shift(2, 0x7262); // rupBuild TODO:
+  if (size > 6) newBlob.write_shift(2, 0x07CD); // rupYear
+  if (size > 8) {
+    newBlob.write_shift(2, 0xC009);
+    newBlob.write_shift(2, 0x0001);
+    newBlob.write_shift(2, 0x0706);
+    newBlob.write_shift(2, 0x0000); // reserved2
+  }
+  return newBlob;
 }

@@ -6,7 +6,7 @@ import {
   parseExtSST, parseWriteAccess, parseUInt16a, parseBool, parseUInt16,
   parseDBCell, parseFormat, parseDefaultRowHeight, parseMergeCells, parseBlank,
   parseHLink, parseNote, parseObj, parseTxO, parseColInfo, parseMulBlank,
-  parseXnum, parseIndex, parseXFExt,
+  parseXnum, parseIndex, parseXFExt, parseWindow1, writeBOF,
 } from './record/entry';
 import WorkBook from '../../workbook';
 import { buildCell } from '../../util/index';
@@ -65,6 +65,7 @@ const XLSRECORDNAME = {
   CalcSaveRecalc: 'CalcSaveRecalc',
   CalcRefMode: 'CalcRefMode',
   XFExt: 'XFExt',
+  Window1: 'Window1',
 };
 
 const XLSRECORDENUM: XLSRecordEnum = {
@@ -110,6 +111,7 @@ const XLSRECORDENUM: XLSRecordEnum = {
   0x005f: { func: parseBool, name: XLSRECORDNAME.CalcSaveRecalc },
   0x000f: { func: parseBool, name: XLSRECORDNAME.CalcRefMode },
   0x087d: { func: parseXFExt, name: XLSRECORDNAME.XFExt },
+  0x003d: { func: parseWindow1, name: XLSRECORDNAME.Window1 },
 };
 
 const BOFList = [0x0009, 0x0209, 0x0409, 0x0809];
@@ -223,6 +225,9 @@ export class Parse {
           case XLSRECORDNAME.Password:
             this.workbook.password = value;
             break;
+          case XLSRECORDNAME.Window1:
+            console.log('Window1-->', JSON.stringify(value));
+            break;
           case XLSRECORDNAME.Date1904:
             this.workbook.date1904 = value;
             break;
@@ -320,7 +325,7 @@ export class Parse {
             }
             break;
           case XLSRECORDNAME.ColInfo:
-            // console.log('ColInfo-->', JSON.stringify(value));
+            console.log('ColInfo-->', JSON.stringify(value));
             // this.workbook.sst = value
             break;
           case XLSRECORDNAME.Dimensions:
@@ -392,5 +397,119 @@ export class Parse {
     }
 
     return this.workbook;
+  }
+
+  write() {
+    let output = CFB.utils.cfb_new();
+    const path = '/Workbook';
+    const workSheetContent = [];
+    const sheetNames = this.workbook.sheetNames;
+    for (let index = 0; index < sheetNames.length; index++) {
+      const sheetName = sheetNames[index];
+      const currWorksheet = this.workbook.worksheet[sheetName];
+      // if (currWorksheet.columns.length > 0) {
+      //   writeWorkSheetContent()
+      // }
+      const content = this.writeWorkSheetContent();
+      workSheetContent.push(content);
+    }
+
+    const workBookContent = this.writeWorkBookContent();
+    // const content = Buffer.concat([workBookContent, ...workSheetContent]);
+    const content = Buffer.concat([]);
+
+    CFB.utils.cfb_add(output, path, content);
+    output = CFB.write(output);
+    if (!Buffer.isBuffer(output)) output = Buffer.from(output);
+    return output;
+  }
+
+  protected writeWorkBookContent() {
+    const options = {
+      type: 'biff8',
+    };
+    // write_biff_rec(A, 0x0809, write_BOF(wb, 0x05, opts));
+    write_biff_rec(A, 0x00e1 /* InterfaceHdr */, b8 ? this.writeUInt16(0x04b0) : null);
+    write_biff_rec(A, 0x00c1 /* Mms */, this.writeZeroes(2));
+    write_biff_rec(A, 0x00e2 /* InterfaceEnd */); // 没内容的
+    write_biff_rec(A, 0x005c /* WriteAccess */, write_WriteAccess('SheetJS', options));
+    write_biff_rec(A, 0x0042 /* CodePage */, this.writeUInt16(b8 ? 0x04b0 : 0x04E4));
+    if(b8) write_biff_rec(A, 0x0161 /* DSF */, this.writeUInt16(0));
+    if(b8) write_biff_rec(A, 0x01c0 /* Excel9File */);
+    write_biff_rec(A, 0x013d /* RRTabId */, write_RRTabId(wb.SheetNames.length));
+    write_biff_rec(A, 0x009c /* BuiltInFnGroupCount */, writeuint16(0x11));  // 这个不是必填吧
+
+    write_biff_rec(A, 0x0019 /* WinProtect */, writeBool(false));
+    write_biff_rec(A, 0x0012 /* Protect */, writeBool(false));
+    write_biff_rec(A, 0x0013 /* Password */, writeUInt16(0));
+    write_biff_rec(A, 0x01af /* Prot4Rev */, writeBool(false));
+    write_biff_rec(A, 0x01bc /* Prot4RevPass */, writeUInt16(0));
+    write_biff_rec(A, 0x003d /* Window1 */, write_Window1(opts));
+    write_biff_rec(A, 0x0040 /* Backup */, writeBool(false));
+    write_biff_rec(A, 0x008d /* HideObj */, writeUInt16(0));
+    write_biff_rec(A, 0x0022 /* Date1904 */, writeBool(safe1904(wb)=="true"));
+    write_biff_rec(A, 0x000e /* CalcPrecision */, writeBool(true));
+    write_biff_rec(A, 0x01b7 /* RefreshAll */, writeBool(false));
+    write_biff_rec(A, 0x00DA /* BookBool */, writeUInt16(0));
+
+    write_FONTS_biff8(A, wb, opts);
+
+    write_biff_rec(A, 0x0031 /* Font */, writeFont({
+      sz:12,
+      color: {theme:1},
+      name: "Arial",
+      family: 2,
+      scheme: "minor"
+    }, opts));
+
+    write_FMTS_biff8(A, wb.SSF, opts);
+    write_CELLXFS_biff8(A, opts);
+    write_biff_rec(A, 0x0160 /* UsesELFs */, writeBool(false));
+
+
+    for (let j = 0; j < this.workbook.sheetNames.length; ++j) {
+      var _sheet = _sheets[j] || ({});
+      write_biff_rec(B, 0x0085 /* BoundSheet8 */, write_BoundSheet8({pos:start, hsState:_sheet.Hidden||0, dt:0, name:wb.SheetNames[j]}, opts));
+      start += bufs[j].length;
+    }
+
+    write_biff_rec(C, 0x008C, write_Country())
+    write_biff_rec(C, 0x000A /* EOF */);
+
+    writeBOF(wb, 0x05, options);
+    writeWriteAccess('otherExcelJS', options);
+    writeRRTabId(this.workbook.sheetNames.length);
+    writeWindow1()
+
+  }
+
+  protected writeWorkSheetContent() {
+
+  }
+
+  writeUInt16(content: number) {
+    const buf = Buffer.alloc(2);
+    buf.writeUInt16LE(content, 0);
+    return buf;
+  }
+
+  writeZeroes(length: number) {
+    const buf = Buffer.alloc(length);
+    return buf;
+  }
+
+  writeBool(content: boolean) {
+    const buf = Buffer.alloc(2);
+    buf.writeUInt16LE(+!!content, 0);
+    return buf;
+  }
+
+  writeCELLXFSBiff8(content: boolean) {
+    for (let i = 0; i < 16; ++i) {
+      write_biff_rec(ba, 0x00e0 /* XF */, writeXF({numFmtId:0, style:true}, 0, opts));
+    }
+    // opts.cellXfs.forEach(function(c) {
+    //   write_biff_rec(ba, 0x00e0 /* XF */, write_XF(c, 0, opts));
+    // });
   }
 }

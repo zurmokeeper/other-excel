@@ -36,3 +36,31 @@ export function parseSST(blob: CustomCFB$Blob, length: number) {
   output.uniqueCount = cstUnique;
   return output;
 }
+
+export function writeSST(data: any) {
+  const size = 8;
+  const newBlob = Buffer.alloc(size) as CustomCFB$Blob;
+  newBlob.write_shift(4, data.count);
+  newBlob.write_shift(4, data.uniqueCount);
+  const strs = [];
+  for (let j = 0; j < data.length; ++j) {
+    strs[j] = writeXLUnicodeRichExtendedString(data[j]);
+  }
+  return Buffer.concat([newBlob as Buffer, ...strs]);
+}
+
+function writeXLUnicodeRichExtendedString(xlstr: any) {
+  const str = (xlstr.t || '');
+  const nfmts = 1;
+
+  const hdr = Buffer.alloc(3 + (nfmts > 1 ? 2 : 0)) as CustomCFB$Blob;
+  hdr.write_shift(2, str.length);
+  hdr.write_shift(1, (nfmts > 1 ? 0x08 : 0x00) | 0x01);
+  if (nfmts > 1) hdr.write_shift(2, nfmts);
+
+  const otext = Buffer.alloc(2 * str.length) as CustomCFB$Blob;
+  otext.write_shift(2 * str.length, str, 'utf16le');
+
+  const out = Buffer.concat([hdr as Buffer, otext as Buffer]);
+  return out;
+}

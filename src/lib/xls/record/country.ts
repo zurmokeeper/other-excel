@@ -16,3 +16,16 @@ export function parseCountry(blob: CustomCFB$Blob) {
   output[1] = CountryCodeEnum[countryCode];
   return output;
 }
+
+export function writeCountry() {
+  const size = 4;
+  // const newBlob = Buffer.alloc(size) as CustomCFB$Blob;
+  // CFB.utils.prep_blob(newBlob, 0);
+  // newBlob.write_shift(2, 0x0056);
+  // newBlob.write_shift(2, 0x0056);
+
+  const newBlob = Buffer.alloc(size);
+  newBlob.writeUInt16LE(0x0056, 0);
+  newBlob.writeUInt16LE(0x0056, 2);
+  return newBlob;
+}
