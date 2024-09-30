@@ -6,34 +6,35 @@ A ROW record describes a single row on an Excel sheet. ROW records and their
 associated cell records occur in blocks of up to 32 rows. Each block ends with a
 DBCELL record.
 
+@link https://github.com/shakinm/xlsReader/blob/master/xls/record/row.go
 Record Data
 Offset		Name		Size		Contents
 --------------------------------------------
-4 			rw			2			Row number.
-6			colMic		2			First defined column in the row.
-8			colMac		2			Last defined column in the row, plus 1.
-10			miyRw		2			Row height.
-12			irwMac		2			Used by Excel to optimize loading the file; if you are creating a BIFF file, set irwMac to 0.
-14 			(Reserved) 	2
-16			grbit		2			Option flags.
-18			ixfe		2			If fGhostDirty=1 (see grbit structure), this is the index to the XF record for the row.
-									Otherwise, this structure is undefined.
-									Note: ixfe uses only the low-order 12 bits of the structure
-									(bits 11–0). Bit 12 is fExAsc , bit 13 is fExDsc , and bits
-									14 and 15 are reserved. fExAsc and fExDsc are set to
-									true if the row has a thick border on top or on bottom,
-									respectively.
+4 			  rw			2			Row number.
+6			    colMic	2			First defined column in the row.
+8			    colMac	2			Last defined column in the row, plus 1.
+10			  miyRw		2			Row height.
+12			  irwMac	2			Used by Excel to optimize loading the file; if you are creating a BIFF file, set irwMac to 0.
+14 			  (Reserved) 	2
+16			  grbit		2			Option flags.
+18			  ixfe		2			If fGhostDirty=1 (see grbit structure), this is the index to the XF record for the row.
+									      Otherwise, this structure is undefined.
+									      Note: ixfe uses only the low-order 12 bits of the structure
+									      (bits 11–0). Bit 12 is fExAsc , bit 13 is fExDsc , and bits
+									      14 and 15 are reserved. fExAsc and fExDsc are set to
+									      true if the row has a thick border on top or on bottom,
+									      respectively.
 
 The grbit structure contains the following option flags:
 Offset		Bits		Mask		Name			Contents
 --------------------------------------------------------
-0			2–0			07h			iOutLevel		Outline level of the row
-			3			08h			(Reserved)
-			4			10h			fCollapsed		=1 if the row is collapsed in outlining
-			5			20h			fDyZero			=1 if the row height is set to 0 (zero)
-			6			40h			fUnsynced		=1 if the font height and row height are not compatible
-			7			80h			fGhostDirty		=1 if the row has been formatted, even if it contains all blank cells
-1			7–0			FFh			(Reserved)
+0			    2–0			07h			iOutLevel		  Outline level of the row
+			    3			  08h			(Reserved)
+			    4			  10h			fCollapsed		=1 if the row is collapsed in outlining
+			    5			  20h			fDyZero			  =1 if the row height is set to 0 (zero)
+			    6			  40h			fUnsynced		  =1 if the font height and row height are not compatible
+			    7			  80h			fGhostDirty		=1 if the row has been formatted, even if it contains all blank cells
+1			    7–0			FFh			(Reserved)
 
 The rw structure contains the 0-based row number. The colMic and colMac fields give
 the range of defined columns in the row.

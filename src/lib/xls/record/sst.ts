@@ -2,7 +2,7 @@ import { CustomCFB$Blob, SSTValueType, StrsType } from '../../../util/type';
 import { parseXLUnicodeRichExtendedString } from '../../../util/charsetParseUtil';
 
 /**
- * @desc [MS-XLS] 2.4.265  SST
+ * @desc [MS-XLS] 2.4.265  SST Shared String Table
  * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/b6231b92-d32e-4626-badd-c3310a672bab
  *
  * Strings: [ { t: '阿萨德', raw: '<t>阿萨德</t>', r: '阿萨德' }, Count: 1, Unique: 1 ],
@@ -13,6 +13,15 @@ import { parseXLUnicodeRichExtendedString } from '../../../util/charsetParseUtil
  *
  * cstTotal -> count of shared string table SST出现的总数量（包括所有的sheet）
  * cstUnique -> 去重以后的SST出现的总数量
+ *
+ * Record Data — BIFF8
+    Offset		Name		Size		Contents
+    --------------------------------------------
+    4 			  cstTotal 	4 			Total number of strings in the shared string table and
+                                extended string table ( EXTSST record)
+    8 			  cstUnique 	4 		Number of unique strings in the shared string table
+    12 			  rgb 		var 		  Array of unique unicode strings (XLUnicodeRichExtendedString).
+ *
  * @param blob
  * @param length
  * @returns

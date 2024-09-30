@@ -58,6 +58,86 @@ const { CFB } = XLSX;
  *
  * 一个XF 是20个字节
  *
+ * @link https://github.com/shakinm/xlsReader/blob/master/xls/record/xf.go
+ * Cell XF Record — BIFF8
+  Record Data
+  Offset		Bits		Mask		Name		Contents
+  --------------------------------------------------------
+  4 			  15–0 		FFFFh 	ifnt 		Index to the FONT record.
+  6 			  15–0 		FFFFh 	ifmt 		Index to the FORMAT record.
+  8 			  0 			0001h 	fLocked 	=1 if the cell is locked
+            1 			0002h 	fHidden 	=1 if the cell is hidden.
+            2 			0004h 	fStyle 		=0 for cell XF.
+                                      =1 for style XF.
+            3 			0008h 	f123Prefix	If the Transition Navigation Keys option is off (Options dialog box,
+                                        Transition tab), f123Prefix=1 indicates that a leading apostrophe
+                                        (single quotation mark) is being used to coerce the cell‘s contents to a
+                                        simple string. If the Transition Navigation Keys option is on, f123Prefix=1 indicates
+                                        that the cell formula begins with one of the four Lotus 1-2-3 alignment
+                                        prefix characters:
+                                        ' left
+                                        " right
+                                        ^ centered
+                                        \ fill
+                                      This bit is always 0 if fStyle=1 .
+            15–4 		FFF0h		ixfParent	Index to the XF record of the parent style. Every cell XF must have a
+                                      parent style XF , which is usually ixfeNormal=0 T his structure is always FFFh if fStyle=1 .
+  10			  2–0			0007h		alc			Alignment:
+                                      0= general
+                                      1= left
+                                      2= center
+                                      3= right
+                                      4= fill
+                                      5= justify
+                                      6= center across selection
+            3			  0008h		fWrap		=1 wrap text in cell.
+            6–4			0070h		alcV		Vertical alignment:
+                                      0= top
+                                      1= center
+                                      2= bottom
+                                      3= justify
+            7			  0080h		fJustLast		(Used only in East Asian versions of Excel).
+            15–8		FF00h		trot			Rotation, in degrees; 0–90dec is up  0–90 deg., 91–180dec is down 1–90
+                                      deg, and 255dec is vertical.
+  12			  3–0			000Fh		cIndent			Indent value (Format Cells dialog box, Alignment tab)
+            4			  0010h		fShrinkToFit	=1 if Shrink To Fit option is on
+            5			  0020h		fMergeCell		=1 if Merge Cells option is on (Format Cells dialog box, Alignment tab).
+            7–6			00C0h		iReadOrder		Reading direction (East Asian versions only):
+                                            0= Context
+                                            1= Left-to-right
+                                            2= Right-to-left
+            9–8			0300h		(Reserved)
+            10			0400h		fAtrNum			=1 if the ifmt is not equal to the ifmt of the parent style XF .
+                                            This bit is N/A if fStyle=1 .
+            11			0800h		fAtrFnt			=1 if the ifnt is not equal to the ifnt of the parent style XF .
+                                          This bit is N/A if fStyle=1 .
+            12			1000h		fAtrAlc			=1 if either the alc or the fWrap structure is not equal to the corresponding structure
+                                          of the parent style XF . This bit is N/A if fStyle=1 .
+            13			2000h		fAtrBdr			=1 if any border line structure ( dgTop , and so on) is not equal to the
+                                          corresponding structure of the parent style XF.  This bit is N/A if fStyle=1 .
+            14			4000h		fAtrPat			=1 if any pattern structure ( fls , icvFore , icvBack ) is not equal to
+                                           the corresponding structure of the parent style XF . This bit is N/A if fStyle=1 .
+            15			8000h		fAtrProt		=1 if either the fLocked structure or the fHidden structure is not equal to the
+                                           corresponding structure of the parent style XF. This bit is N/A if fStyle=1.
+  14			  3–0			000Fh		dgLeft			Border line style (see the following table).
+            7–4			00F0h		dgRight			Border line style (see the following table).
+            11–8		0F00h		dgTop			  Border line style (see the following table).
+            15–12		F000h		dgBottom		Border line style (see the following table).
+  16			  6–0			007Fh		icvLeft			Index to the color palette for the left border color.
+            13–7		3F80h		icvRight		Index to the color palette for the right border color.
+            15–14		C000h		grbitDiag		1=diag down, 2=diag up, 3=both.
+  18			  6–0			0000007Fh	icvTop			Index to the color palette for the top border color.
+            13–7		00003F80h	icvBottom		Index to the color palette for the bottom border color.
+            20–14		001FC000h	icvDiag			for diagonal borders.
+            24–21		01E00000h	dgDiag			Border line style (see the following table).
+            25			02000000h	fHasXFExt		=1 when a subsequent XFEXT record may modify the properties of this XF.
+                                            New for Office Excel 2007
+            31–26		FC000000h	fls				Fill pattern.
+  22			  6–0			007Fh		icvFore			Index to the color palette for the foreground color of the fill pattern.
+            13–7		3F80h		icvBack			Index to the color palette for the background color of the fill pattern.
+            14			4000h		fSxButton		=1 if the XF record is attached to a PivotTable button. This bit is always 0 if fStyle=1 .
+            15			8000h		(Reserved)
+ *
  * @param blob
  * @param length
  * @returns

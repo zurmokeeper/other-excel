@@ -585,11 +585,18 @@ describe('WorkSheet', () => {
     expect(cols).toEqual(expectData);
   });
 
-  it('new WorkSheet().actualRowCount: success. actualRowCount is 9', async () => {
+  it('new WorkSheet().actualRowCount: success.', async () => {
     const worksheet = workbook.getWorksheet(0);
     const actualRowCount = worksheet.actualRowCount;
     const expectData = 9;
     expect(actualRowCount).toEqual(expectData);
+  });
+
+  it('new WorkSheet().actualColumnCount: success.', async () => {
+    const worksheet = workbook.getWorksheet(0);
+    const actualColumnCount = worksheet.actualColumnCount;
+    const expectData = 5;
+    expect(actualColumnCount).toEqual(expectData);
   });
 
   it('new WorkSheet().dimensions: success.', async () => {
@@ -599,7 +606,7 @@ describe('WorkSheet', () => {
     expect(dimensions).toEqual(expectData);
   });
 
-  it('new WorkSheet().mergeCells: success. mergeCells is 9', async () => {
+  it('new WorkSheet().mergeCells: success.', async () => {
     const worksheet = workbook.getWorksheet(0);
     const mergeCells = worksheet.mergeCells;
     const expectData = 9;

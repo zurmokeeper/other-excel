@@ -32,6 +32,16 @@ function parseCell(blob: CustomCFB$Blob) {
  * 前6个是 cell 后4个是 isst
  *
  * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/3f52609d-816f-44a7-aad1-e0fe2abccebd
+ *
+ * @link https://github.com/shakinm/xlsReader/blob/master/xls/record/labelSst.go
+ * Record Data — BIFF8
+  Offset		Field Name		Size		Contents
+  ------------------------------------------------
+  4			    rw				    2			  Row (0-based)
+  6			    col				    2			  Column (0-based)
+  8			    ixfe			    2			  Index to the XF record
+  10			  isst			    4			  Index into the SST record where actual string is stored
+ *
  * @param blob
  * @param length
  */

@@ -72,8 +72,8 @@ class WorkSheet {
     return row;
   }
 
-  addRow(data: any[]): Row {
-  }
+  // addRow(data: any[]): Row {
+  // }
 
   getRows(start: number, end: number): Row[] {
     if (start < 0 || end < 0) {

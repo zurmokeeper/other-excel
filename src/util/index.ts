@@ -1,4 +1,7 @@
-import { Cell, CellValueType } from './type';
+import XLSX from 'xlsx';
+import { Cell, CellValueType, CustomCFB$Blob } from './type';
+
+const { CFB } = XLSX;
 
 /**
  * @desc 获取某一个bit 位的值
@@ -52,3 +55,31 @@ export function buildCell(cell: { row: number, col: number, type: CellValueType,
   const data = { address, ...cell, value };
   return data;
 }
+
+export function newCFBBuffer(size: number) {
+  const newBlob = Buffer.alloc(size) as CustomCFB$Blob;
+  CFB.utils.prep_blob(newBlob, 0);
+  return newBlob;
+}
+
+/**
+ * @desc [name, size, content]
+ * @param buf
+ * @param record
+ * @param content
+ * @param length
+ */
+export function writeRecord(buf: Buffer[], record: number, content: CustomCFB$Blob, length?: number) {
+  const newBlob = newCFBBuffer(4);
+  newBlob.write_shift(2, record);
+  newBlob.write_shift(2, content.length);
+  const output = Buffer.concat([newBlob as Buffer, content as Buffer]);
+  buf.push(output);
+}
+// export function writeRecord(buf: Buffer[], record: number, content: Buffer, length?: number) {
+//   const newBlob = Buffer.alloc(4);
+//   newBlob.writeUint16LE(record, 0);
+//   newBlob.writeUint16LE(content.length, 2);
+//   const output = Buffer.concat([newBlob, content]);
+//   buf.push(output);
+// }

@@ -26,6 +26,18 @@ function parseRkRec(blob: CustomCFB$Blob, length?: number) {
  * @desc [MS-XLS] 3.9.34 RK
  * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/673697da-fb33-41d4-b497-418fdb316c1e
  *
+ * @link https://github.com/shakinm/xlsReader/blob/master/xls/record/rk.go
+ * Record Data
+  Offset		Name		Size		Contents
+  --------------------------------------------
+  4			    rw			2			Row
+  6			    col			2			Column
+  8			    ixfe		2			Index to the XF record
+  10			  rk			4			RK number (see the following description)
+
+  An RK number is either a 30-bit integer or the most significant 30 bits of an IEEE
+  number. The two LSBs of the 32-bit rk field are always reserved for RK type
+  encoding; this is why the RK numbers are 30 bits, not the full 32.
  *
  * @param blob
  * @param length

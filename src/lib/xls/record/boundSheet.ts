@@ -6,6 +6,30 @@ import { parseShortXLUnicodeString } from '../../../util/charsetParseUtil';
  * BoundSheet8 [(0x8500)133 20]
  * lbPlyPos(4 byte) (A - hsState (2 bits) unused (6 bits))(1 byte)   dt (8 bits)(1 byte)  剩下14 byte 都是 stName
  * @link https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/b9ec509a-235d-424e-871d-f8e721106501
+ *
+ * @link https://github.com/shakinm/xlsReader/blob/master/xls/record/boundSheet.go
+ * Offset		 Field Name		 Size		 Contents
+  -------------------------------------------------
+  4			     lbPlyPos		    4			Stream position of the start of the BOF record for the sheet
+  8			     grbit			    2			Option flags
+  10			   cch				    1			Sheet name length ( grbit / rgb fields of Unicode String)
+  11			   rgch			    var			Sheet name ( grbit / rgb fields of Unicode String)
+
+  The grbit structure contains the following options:
+
+  Bits	Mask	Option Name		Contents
+  ----------------------------------------
+  1–0 	0003h 	hsState 		Hidden state:
+                              00h = visible
+                              01h = hidden
+                              02h = very hidden (see text)
+  7–2 	00FCh 						    (Reserved)
+  15–8	FF00h 	dt				  Sheet type:
+                              00h = worksheet or dialog sheet
+                              01h = Excel 4.0 macro sheet
+                              02h = chart
+                              06h = Visual Basic module
+ *
  * @param blob
  * @param length
  * @param opts

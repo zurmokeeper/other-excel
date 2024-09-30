@@ -360,10 +360,11 @@ const recordNameNum = {
   'Fbi2': 4200,
 };
 
-async function test(){
+async function test() {
     // const input = await fs.readFile(`./sample3.xls`);
     // const input = await fs.readFile(`./test1.xls`);
-    const input = await fs.readFile(`./test1-merge.xls`);
+    // const input = await fs.readFile(`./test1-merge.xls`);
+    const input = await fs.readFile(`./wps-plain.xls`);
     const cfb = CFB.read(input, {type: 'buffer'});
     const Workbook = CFB.find(cfb, 'Workbook') || CFB.find(cfb, 'Book') ;
     let workbookContent = Workbook.content;
@@ -372,12 +373,22 @@ async function test(){
 
     // await fs.writeFile(`./record-test1.json`, JSON.stringify(dataList));
 
+
+
     let list = dataList.map((item)=>item.num);
     const num = reverse(recordNameNum);
-    // const data = {};
+    const data = {};
     // list.forEach((item)=>{
     //   data[item] = num[item]
     // })
+
+    dataList.forEach((item)=>{
+      if(num[item.num]) {
+        item.type = num[item.num];
+      }
+    })
+    await fs.writeFile(`./wps-plain.json`, JSON.stringify(dataList));
+    return;
     
     // await fs.writeFile(`./record-data-uniq.json`, JSON.stringify(data));
 

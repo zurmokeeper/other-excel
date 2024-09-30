@@ -36,7 +36,9 @@ async function name() {
   // console.log('workbook1', workbook1);
   console.log('workbook1', workbook1.sheetNames);
   const worksheet = workbook1.getWorksheet(0);
-  // console.log('worksheet', worksheet)
+  // const worksheet1 = workbook1.getWorksheet(1);
+  // const worksheet2 = workbook1.getWorksheet(2);
+  // console.log('worksheet', worksheet);
   const cell = worksheet.getCell('A3');
 //   console.log('cell', cell);
 

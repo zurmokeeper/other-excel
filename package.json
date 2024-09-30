@@ -36,7 +36,8 @@
 		"build": "tsc",
 		"mbuild": "microbundle --format cjs,esm",
 		"coverage": "jest --coverage",
-		"tsx": "tsx src/test.ts"
+		"tsx": "tsx src/test.ts",
+		"tsupbuild": "tsup"
 	},
 	"microbundle": {
 		"format": [
@@ -61,12 +62,14 @@
 		"@types/node": "^20.11.28",
 		"@typescript-eslint/eslint-plugin": "^8.1.0",
 		"@typescript-eslint/parser": "^8.1.0",
+		"cfb": "^1.2.2",
 		"eslint": "^8.0.0",
 		"eslint-config-airbnb-base": "^15.0.0",
 		"eslint-plugin-import": "^2.29.1",
 		"jest": "^29.7.0",
 		"microbundle": "^0.15.1",
 		"ts-jest": "^29.2.4",
+		"tsup": "^8.2.4",
 		"tsx": "^4.19.0",
 		"typescript": "^5.5.4",
 		"typescript-eslint": "^8.1.0"

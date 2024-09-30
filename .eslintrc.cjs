@@ -36,9 +36,7 @@ module.exports = {
     'prefer-destructuring': 'off',
     'no-restricted-syntax': 'off',
     'lines-between-class-members': 'off',
-    'no-tabs': ['error', {
-      'allowIndentationTabs': true 
-    }],
+    'no-tabs': 'off',
     // "semi": ["error", "always"],
     // "space-before-blocks": ["error", "always"],
     // "object-curly-spacing": ["error", "always"],
