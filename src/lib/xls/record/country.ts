@@ -27,5 +27,5 @@ export function writeCountry() {
   const newBlob = Buffer.alloc(size);
   newBlob.writeUInt16LE(0x0056, 0);
   newBlob.writeUInt16LE(0x0056, 2);
-  return newBlob;
+  return newBlob as CustomCFB$Blob;
 }

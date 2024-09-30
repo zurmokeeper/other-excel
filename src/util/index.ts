@@ -69,11 +69,18 @@ export function newCFBBuffer(size: number) {
  * @param content
  * @param length
  */
-export function writeRecord(buf: Buffer[], record: number, content: CustomCFB$Blob, length?: number) {
+export function writeRecord(buf: Buffer[], record: number, content?: CustomCFB$Blob, length?: number) {
   const newBlob = newCFBBuffer(4);
   newBlob.write_shift(2, record);
-  newBlob.write_shift(2, content.length);
-  const output = Buffer.concat([newBlob as Buffer, content as Buffer]);
+  let output;
+  if (content) {
+    newBlob.write_shift(2, content.length);
+    output = Buffer.concat([newBlob as Buffer, content as Buffer]);
+  } else {
+    newBlob.write_shift(2, 0);
+    output = Buffer.concat([newBlob as Buffer]);
+  }
+
   buf.push(output);
 }
 // export function writeRecord(buf: Buffer[], record: number, content: Buffer, length?: number) {
@@ -83,3 +90,26 @@ export function writeRecord(buf: Buffer[], record: number, content: CustomCFB$Bl
 //   const output = Buffer.concat([newBlob, content]);
 //   buf.push(output);
 // }
+
+export function writeUInt16(content: number) {
+  const buf = Buffer.alloc(2);
+  buf.writeUInt16LE(content, 0);
+  return buf as CustomCFB$Blob;
+}
+
+export function writeZeroes(length: number) {
+  const buf = Buffer.alloc(length);
+  return buf as CustomCFB$Blob;
+}
+
+export function writeBool(content: boolean) {
+  const buf = Buffer.alloc(2);
+  buf.writeUInt16LE(+!!content, 0);
+  return buf as CustomCFB$Blob;
+}
+
+export function writeXnum(content: number) {
+  const buf = newCFBBuffer(8);
+  buf.write_shift(8, content, 'f');
+  return buf;
+}

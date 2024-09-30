@@ -1,4 +1,5 @@
 import { CustomCFB$Blob } from '../../../util/type';
+import { newCFBBuffer } from '../../../util/index';
 
 /**
  * @desc  [MS-XLS] 2.4.90 Dimensions
@@ -23,4 +24,15 @@ export function parseDimensions(blob: CustomCFB$Blob, length: number, options: a
   const colMac = blob.read_shift(2);
   blob.l = end;
   return { start: { row: rwMic, col: colMic }, end: { row: rwMac, col: colMac } };
+}
+
+export function writeDimensions(range: any, opts: any) {
+  const size = 4;
+  const newBlob = newCFBBuffer(2 * size + 6);
+  newBlob.write_shift(size, range.s.r);
+  newBlob.write_shift(size, range.e.r + 1);
+  newBlob.write_shift(2, range.s.c);
+  newBlob.write_shift(2, range.e.c + 1);
+  newBlob.write_shift(2, 0);
+  return newBlob;
 }

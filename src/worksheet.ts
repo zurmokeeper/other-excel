@@ -33,6 +33,8 @@ class WorkSheet {
 
   columns: Array<Header>;
 
+  rows: any[];
+
   constructor(options: Options) {
     this.index = 0;
     this.name = options.name;
@@ -55,6 +57,8 @@ class WorkSheet {
     this.actualColumnCount = 0;
 
     this.columns = [];
+
+    this.rows = [];
   }
 
   getRow(index: number): Row {
@@ -188,6 +192,28 @@ class WorkSheet {
     const cell = this.cells.find((item) => item.col === realCol && item.row === realRow);
     // eslint-disable-next-line consistent-return
     return cell;
+  }
+
+  addRow(data: any[]) {
+    // 直接在这里处理好全部，然后挂到对应的属性上，后续写入cfb的时候，直接读这个属性就好了
+    // 数字的话要单独处理 rks
+    // 字符串  labelSsts
+    // 要算 dimensions
+    // 要算 colInfo
+    // 要算 rowInfo
+
+    // let rwMic;
+    // // 找到里面第1个不为空的行
+    // if (this.columns.length > 0) {
+    //   data.unshift(this.columns);
+    //   rwMic = 0
+    // }
+
+    this.rows.push(data);
+  }
+
+  addRows(data: any[]) {
+    this.rows = this.rows.concat(data);
   }
 }
 

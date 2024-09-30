@@ -55,6 +55,7 @@ export function writeFont(options: any) {
   const size = 12;
   const name = 'Arial';
   const newBlob = Buffer.alloc(size) as CustomCFB$Blob;
+  // const newBlob = Buffer.alloc(size);
   CFB.utils.prep_blob(newBlob, 0);
   newBlob.write_shift(2, size * 20);
   newBlob.write_shift(4, 0); // fHighByte 0x0

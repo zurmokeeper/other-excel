@@ -1,4 +1,5 @@
 import { CustomCFB$Blob } from '../../../util/type';
+import { newCFBBuffer } from '../../../util/index';
 
 /**
  * @desc [MS-XLS] 2.4.53 ColInfo
@@ -24,4 +25,21 @@ export function parseColInfo(blob: CustomCFB$Blob, length: number, options: any)
     output.level = (flags >> 8) & 0x7; //  iOutLevel 指定由 colFirst 和 colLast 定义的列范围的大纲级别。
   }
   return output;
+}
+
+export function writeColInfo(col: any, idx: number) {
+  const newBlob = newCFBBuffer(12);
+
+  // TODO: col_obj_w(idx, col)
+  newBlob.write_shift(2, idx);
+  newBlob.write_shift(2, idx);
+  newBlob.write_shift(2, col.width * 256);
+  newBlob.write_shift(2, 0);
+  let f = 0;
+  if (col.hidden) f |= 1;
+  newBlob.write_shift(1, f);
+  f = col.level || 0;
+  newBlob.write_shift(1, f);
+  newBlob.write_shift(2, 0);
+  return newBlob;
 }

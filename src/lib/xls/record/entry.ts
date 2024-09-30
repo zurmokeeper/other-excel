@@ -1,16 +1,16 @@
-import { parseBoundSheet8 } from './boundSheet';
+import { parseBoundSheet8, writeBoundSheet8 } from './boundSheet';
 import { parseBOF, writeBOF } from './bof';
 import { parseSST } from './sst';
-import { parseCountry } from './country';
-import { parseDimensions } from './dimensions';
+import { parseCountry, writeCountry } from './country';
+import { parseDimensions, writeDimensions } from './dimensions';
 import { parseRow } from './row';
 import { parseIndex } from './recordIndex';
 import { parseLabelSST } from './labelSst';
 import { parseXF } from './xf';
-import { parseFont } from './font';
+import { parseFont, writeFont } from './font';
 import { parseRK } from './rk';
 import { parseExtSST } from './extSst';
-import { parseWriteAccess } from './writeAccess';
+import { parseWriteAccess, writeWriteAccess } from './writeAccess';
 import { parseDBCell } from './dbCell';
 import { parseFormat } from './format';
 import { parseDefaultRowHeight } from './defaultRowHeight';
@@ -20,10 +20,13 @@ import { parseHLink } from './hLink';
 import { parseNote } from './note';
 import { parseObj } from './obj';
 import { parseTxO } from './txO';
-import { parseColInfo } from './colInfo';
+import { parseColInfo, writeColInfo } from './colInfo';
 import { parseMulBlank } from './mulBlank';
 import { parseXFExt } from './xfExt';
-import { parseWindow1 } from './window1';
+import { parseWindow1, writeWindow1 } from './window1';
+import { writeRRTabId } from './rrTabId';
+import { parseGuts, writeGuts } from './guts';
+import { parseWindow2, writeWindow2 } from './window2';
 
 import { CustomCFB$Blob } from '../../../util/type';
 
@@ -92,6 +95,18 @@ export {
   parseIndex,
   parseXFExt,
   parseWindow1,
+  parseGuts,
+  parseWindow2,
 
   writeBOF,
+  writeWriteAccess,
+  writeRRTabId,
+  writeWindow1,
+  writeFont,
+  writeBoundSheet8,
+  writeCountry,
+  writeGuts,
+  writeDimensions,
+  writeColInfo,
+  writeWindow2,
 };

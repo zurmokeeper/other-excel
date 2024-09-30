@@ -6,10 +6,16 @@ import {
   parseExtSST, parseWriteAccess, parseUInt16a, parseBool, parseUInt16,
   parseDBCell, parseFormat, parseDefaultRowHeight, parseMergeCells, parseBlank,
   parseHLink, parseNote, parseObj, parseTxO, parseColInfo, parseMulBlank,
-  parseXnum, parseIndex, parseXFExt, parseWindow1, writeBOF,
+  parseXnum, parseIndex, parseXFExt, parseWindow1, parseGuts, parseWindow2,
+  writeBOF, writeWriteAccess,
+  writeRRTabId, writeWindow1, writeFont, writeBoundSheet8, writeCountry,
+  writeGuts, writeDimensions, writeColInfo, writeWindow2,
 } from './record/entry';
 import WorkBook from '../../workbook';
-import { buildCell, writeRecord } from '../../util/index';
+import {
+  buildCell, writeRecord, writeUInt16, writeZeroes, writeBool, writeXnum,
+} from '../../util/index';
+import WorkSheet from '../../worksheet';
 
 const { CFB } = XLSX;
 
@@ -66,6 +72,13 @@ const XLSRECORDNAME = {
   CalcRefMode: 'CalcRefMode',
   XFExt: 'XFExt',
   Window1: 'Window1',
+  InterfaceHdr: 'InterfaceHdr',
+  Mms: 'Mms',
+  InterfaceEnd: 'InterfaceEnd',
+  CodePage: 'CodePage',
+  DSF: 'DSF',
+  Guts: 'Guts',
+  Window2: 'Window2',
 };
 
 const XLSRECORDENUM: XLSRecordEnum = {
@@ -112,7 +125,29 @@ const XLSRECORDENUM: XLSRecordEnum = {
   0x000f: { func: parseBool, name: XLSRECORDNAME.CalcRefMode },
   0x087d: { func: parseXFExt, name: XLSRECORDNAME.XFExt },
   0x003d: { func: parseWindow1, name: XLSRECORDNAME.Window1 },
+  0x0080: { func: parseGuts, name: XLSRECORDNAME.Guts },
+  0x023e: { func: parseWindow2, name: XLSRECORDNAME.Window2 },
+
+  0x00e1: { name: XLSRECORDNAME.InterfaceHdr },
+  0x00c1: { name: XLSRECORDNAME.Mms },
+  0x00e2: { name: XLSRECORDNAME.InterfaceEnd },
+  0x0042: { name: XLSRECORDNAME.CodePage },
+  0x0161: { name: XLSRECORDNAME.DSF },
 };
+
+interface XLSRecordStr2NumMapType {
+	[key: string]: number
+}
+function reverseXLSRecordEnum(obj: XLSRecordEnum) {
+  const newObj: XLSRecordStr2NumMapType = {};
+  // eslint-disable-next-line guard-for-in
+  for (const key in obj) {
+    newObj[obj[key].name] = Number(key);
+  }
+  return newObj;
+}
+
+const XLSRecordStr2NumMap = reverseXLSRecordEnum(XLSRECORDENUM);
 
 const BOFList = [0x0009, 0x0209, 0x0409, 0x0809];
 
@@ -423,6 +458,9 @@ export class Parse {
   write() {
     let output = CFB.utils.cfb_new();
     const path = '/Workbook';
+
+    const workBookContent = this.writeWorkBookContent();
+
     const workSheetContent = [];
     const sheetNames = this.workbook.sheetNames;
     for (let index = 0; index < sheetNames.length; index++) {
@@ -431,11 +469,10 @@ export class Parse {
       // if (currWorksheet.columns.length > 0) {
       //   writeWorkSheetContent()
       // }
-      const content = this.writeWorkSheetContent();
+      const content = this.writeWorkSheetContent(currWorksheet);
       workSheetContent.push(content);
     }
 
-    const workBookContent = this.writeWorkBookContent();
     // const content = Buffer.concat([workBookContent, ...workSheetContent]);
     const content = Buffer.concat([]);
 
@@ -451,91 +488,110 @@ export class Parse {
     };
 
     const buf: Buffer[] = [];
-    // writeRecord(buf, 0x00c1, this.writeZeroes(2));
-    // writeRecord(buf, 0x0809, writeBOF(wb, 0x05, options));
+    const sheetNames = this.workbook.sheetNames;
 
-    // // write_biff_rec(A, 0x0809, write_BOF(wb, 0x05, opts));
-    // write_biff_rec(A, 0x00e1 /* InterfaceHdr */, b8 ? this.writeUInt16(0x04b0) : null);
-    // write_biff_rec(A, 0x00c1 /* Mms */, this.writeZeroes(2));
-    // write_biff_rec(A, 0x00e2 /* InterfaceEnd */); // 没内容的
-    // write_biff_rec(A, 0x005c /* WriteAccess */, write_WriteAccess('SheetJS', options));
-    // write_biff_rec(A, 0x0042 /* CodePage */, this.writeUInt16(b8 ? 0x04b0 : 0x04E4));
+    writeRecord(buf, XLSRecordStr2NumMap[XLSRECORDNAME.BOF], writeBOF(wb, 0x05, options));
+    writeRecord(buf, XLSRecordStr2NumMap[XLSRECORDNAME.InterfaceHdr] /* InterfaceHdr */, writeUInt16(0x04b0));
+    writeRecord(buf, XLSRecordStr2NumMap[XLSRECORDNAME.Mms] /* Mms */, writeZeroes(2));
+    writeRecord(buf, XLSRecordStr2NumMap[XLSRECORDNAME.InterfaceEnd] /* InterfaceEnd */); // 没内容的
+    writeRecord(buf, XLSRecordStr2NumMap[XLSRECORDNAME.WriteAccess] /* WriteAccess */, writeWriteAccess('SheetJS', options));
+    // writeRecord(buf, 0x0042 /* CodePage */, writeUInt16(b8 ? 0x04b0 : 0x04E4));
+    writeRecord(buf, XLSRecordStr2NumMap[XLSRECORDNAME.CodePage] /* CodePage */, writeUInt16(0x04b0));
     // if(b8) write_biff_rec(A, 0x0161 /* DSF */, this.writeUInt16(0));
+    writeRecord(buf, XLSRecordStr2NumMap[XLSRECORDNAME.DSF] /* DSF */, writeUInt16(0));
     // if(b8) write_biff_rec(A, 0x01c0 /* Excel9File */);
-    // write_biff_rec(A, 0x013d /* RRTabId */, write_RRTabId(wb.SheetNames.length));
+    writeRecord(buf, XLSRecordStr2NumMap[XLSRECORDNAME.RRTabId] /* RRTabId */, writeRRTabId(sheetNames.length) as CustomCFB$Blob);
     // write_biff_rec(A, 0x009c /* BuiltInFnGroupCount */, writeuint16(0x11));  // 这个不是必填吧
 
-    // write_biff_rec(A, 0x0019 /* WinProtect */, writeBool(false));
-    // write_biff_rec(A, 0x0012 /* Protect */, writeBool(false));
-    // write_biff_rec(A, 0x0013 /* Password */, writeUInt16(0));
-    // write_biff_rec(A, 0x01af /* Prot4Rev */, writeBool(false));
-    // write_biff_rec(A, 0x01bc /* Prot4RevPass */, writeUInt16(0));
-    // write_biff_rec(A, 0x003d /* Window1 */, write_Window1(opts));
-    // write_biff_rec(A, 0x0040 /* Backup */, writeBool(false));
-    // write_biff_rec(A, 0x008d /* HideObj */, writeUInt16(0));
-    // write_biff_rec(A, 0x0022 /* Date1904 */, writeBool(safe1904(wb)=="true"));
-    // write_biff_rec(A, 0x000e /* CalcPrecision */, writeBool(true));
-    // write_biff_rec(A, 0x01b7 /* RefreshAll */, writeBool(false));
-    // write_biff_rec(A, 0x00DA /* BookBool */, writeUInt16(0));
+    writeRecord(buf, 0x0019 /* WinProtect */, writeBool(false));
+    writeRecord(buf, 0x0012 /* Protect */, writeBool(false));
+    writeRecord(buf, 0x0013 /* Password */, writeUInt16(0));
+    writeRecord(buf, 0x01af /* Prot4Rev */, writeBool(false));
+    writeRecord(buf, 0x01bc /* Prot4RevPass */, writeUInt16(0));
+    writeRecord(buf, 0x003d /* Window1 */, writeWindow1());
+    writeRecord(buf, 0x0040 /* Backup */, writeBool(false));
+    writeRecord(buf, 0x008d /* HideObj */, writeUInt16(0));
+    writeRecord(buf, 0x0022 /* Date1904 */, writeBool(safe1904(wb) == 'true'));
+    writeRecord(buf, 0x000e /* CalcPrecision */, writeBool(true));
+    writeRecord(buf, 0x01b7 /* RefreshAll */, writeBool(false));
+    writeRecord(buf, 0x00DA /* BookBool */, writeUInt16(0));
 
     // write_FONTS_biff8(A, wb, opts);
 
-    // write_biff_rec(A, 0x0031 /* Font */, writeFont({
-    //   sz:12,
-    //   color: {theme:1},
-    //   name: "Arial",
-    //   family: 2,
-    //   scheme: "minor"
-    // }, opts));
+    writeRecord(buf, 0x0031 /* Font */, writeFont({
+      sz: 12,
+      color: { theme: 1 },
+      name: 'Arial',
+      family: 2,
+      scheme: 'minor',
+    }));
 
     // write_FMTS_biff8(A, wb.SSF, opts);
     // write_CELLXFS_biff8(A, opts);
-    // write_biff_rec(A, 0x0160 /* UsesELFs */, writeBool(false));
+    writeRecord(buf, 0x0160 /* UsesELFs */, writeBool(false));
 
+    const BPartBuf: Buffer[] = [];
+    writeRecord(BPartBuf, 0x008C, writeCountry());
 
-    // for (let j = 0; j < this.workbook.sheetNames.length; ++j) {
+    // for (let j = 0; j < sheetNames.length; j++) {
     //   var _sheet = _sheets[j] || ({});
-    //   write_biff_rec(B, 0x0085 /* BoundSheet8 */, write_BoundSheet8({pos:start, hsState:_sheet.Hidden||0, dt:0, name:wb.SheetNames[j]}, opts));
+    //   writeRecord(B, 0x0085 /* BoundSheet8 */, writeBoundSheet8({ pos: start, hiddenState: _sheet.Hidden || 0, dt: 0, sheetName: sheetNames[j] }, opts));
     //   start += bufs[j].length;
     // }
-
-    // write_biff_rec(C, 0x008C, write_Country())
-    // write_biff_rec(C, 0x000A /* EOF */);
-
-    // writeBOF(wb, 0x05, options);
-    // writeWriteAccess('otherExcelJS', options);
-    // writeRRTabId(this.workbook.sheetNames.length);
-    // writeWindow1()
-
-  }
-
-  protected writeWorkSheetContent() {
-
-  }
-
-  writeUInt16(content: number) {
-    const buf = Buffer.alloc(2);
-    buf.writeUInt16LE(content, 0);
+    writeRecord(BPartBuf, 0x000A /* EOF */);
     return buf;
   }
 
-  writeZeroes(length: number) {
-    const buf = Buffer.alloc(length);
-    return buf;
-  }
+  protected writeWorkSheetContent(currWorksheet: WorkSheet, options?: any) {
+    const buf: Buffer[] = [];
+    writeRecord(buf, 0x0809, writeBOF(wb, 0x10, options));
+    /* [Uncalced] Index */
+    writeRecord(buf, 0x000d /* CalcMode */, writeUInt16(1));
+    writeRecord(buf, 0x000c /* CalcCount */, writeUInt16(100));
+    writeRecord(buf, 0x000f /* CalcRefMode */, writeBool(true));
+    writeRecord(buf, 0x0011 /* CalcIter */, writeBool(false));
+    writeRecord(buf, 0x0010 /* CalcDelta */, writeXnum(0.001));
+    writeRecord(buf, 0x005f /* CalcSaveRecalc */, writeBool(true));
+    writeRecord(buf, 0x002a /* PrintRowCol */, writeBool(false));
+    writeRecord(buf, 0x002b /* PrintGrid */, writeBool(false));
+    writeRecord(buf, 0x0082 /* GridSet */, writeUInt16(1));
+    writeRecord(buf, 0x0080 /* Guts */, writeGuts());
+    /* DefaultRowHeight WsBool [Sync] [LPr] [HorizontalPageBreaks] [VerticalPageBreaks] */
+    /* Header (string) */
+    /* Footer (string) */
+    writeRecord(buf, 0x0083 /* HCenter */, writeBool(false));
+    writeRecord(buf, 0x0084 /* VCenter */, writeBool(false));
 
-  writeBool(content: boolean) {
-    const buf = Buffer.alloc(2);
-    buf.writeUInt16LE(+!!content, 0);
-    return buf;
-  }
+    write_ws_cols_biff8(buf, ws['!cols']);
 
-  writeCELLXFSBiff8(content: boolean) {
-    for (let i = 0; i < 16; ++i) {
-      write_biff_rec(ba, 0x00e0 /* XF */, writeXF({numFmtId:0, style:true}, 0, opts));
+    let firstCol;
+    if (currWorksheet.columns.length > 0) {
+
+      
+      throw new Error('Worksheet columns 长度不能小于0');
     }
-    // opts.cellXfs.forEach(function(c) {
-    //   write_biff_rec(ba, 0x00e0 /* XF */, write_XF(c, 0, opts));
-    // });
+    
+
+    cols.forEach((col, idx) => {
+      if (col) {
+        writeRecord(ba, 0x007d /* ColInfo */, writeColInfo(col_obj_w(idx, col), idx));
+      }
+    });
+
+    writeRecord(buf, 0x200, writeDimensions(range, options));
+
+    writeRecord(buf, 0x023e /* Window2 */, writeWindow2(0));
+
+    // write_FEAT(ba, ws);
+    writeRecord(buf, 0x000a /* EOF */);
   }
+
+  // writeCELLXFSBiff8(content: boolean) {
+  //   for (let i = 0; i < 16; ++i) {
+  //     write_biff_rec(ba, 0x00e0 /* XF */, writeXF({numFmtId:0, style:true}, 0, opts));
+  //   }
+  //   // opts.cellXfs.forEach(function(c) {
+  //   //   write_biff_rec(ba, 0x00e0 /* XF */, write_XF(c, 0, opts));
+  //   // });
+  // }
 }

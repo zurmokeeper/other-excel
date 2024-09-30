@@ -70,6 +70,10 @@ async function name() {
   // const buffer = await otherExcel.writeBuffer();
   // const buffer = await otherExcel.write('');
 }
+// worksheet.columns = [
+//   { header: 'Name', key: 'name', width: 30 },
+//   { header: 'Age', key: 'age', width: 10 }
+// ];
 
 name();
 
